@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<title>Jadual Kuliah Masjid As-Salam</title>
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --maroon:#8B0000; --maroon-dark:#6B0000; --red:#C0182B;
+    --ink:#1a1a1a; --line:#d9d9d9; --soft:#f3f4f6;
+    --green:#0f7b52; --gold:#d4a017; --muslimah:#8e24aa;
+  }
+  body{ font-family:"Segoe UI",Arial,sans-serif; color:var(--ink); width:1123px; margin:0 auto; background:#fff; }
+  .sheet{ width:1123px; min-height:794px; position:relative; }
+
+  .top{ display:flex; align-items:stretch; }
+  .month{ background:var(--red); color:#fff; padding:14px 26px; display:flex; flex-direction:column;
+          justify-content:center; align-items:center; min-width:150px; }
+  .month .m{ font-size:34px; font-weight:800; letter-spacing:1px; line-height:1; }
+  .month .y{ font-size:26px; font-weight:700; margin-top:2px; }
+  .titlebar{ flex:1; padding:12px 24px; display:flex; flex-direction:column; justify-content:center; }
+  .khat{ text-align:center; }
+  .khat img{ max-height:56px; }
+  .khat .fallback{ font-size:30px; color:var(--maroon); font-weight:700; }
+  .en{ text-align:right; margin-top:4px; }
+  .en h1{ color:var(--green); font-size:20px; font-weight:800; }
+  .en p{ font-size:13px; font-weight:600; color:#333; }
+  .badge{ width:82px; height:82px; margin:8px 16px; align-self:center; display:flex;
+          align-items:center; justify-content:center; }
+  .badge img{ max-width:100%; max-height:100%; }
+  .badge .fallback{ color:var(--gold); font-size:11px; font-weight:700; text-align:center;
+          border:3px solid var(--green); border-radius:50%; width:82px; height:82px;
+          display:flex; align-items:center; justify-content:center; line-height:1.1; }
+
+  table{ width:100%; border-collapse:collapse; table-layout:fixed; }
+  th{ background:var(--maroon); color:#fff; font-size:13px; font-weight:700; padding:8px 4px;
+      border:1px solid var(--maroon-dark); letter-spacing:.5px; }
+  td{ border:1px solid var(--line); vertical-align:top; height:118px; padding:0; position:relative; }
+  .cell{ display:flex; flex-direction:column; height:100%; }
+  .datebar{ display:flex; justify-content:space-between; align-items:center; background:#2b2b2b;
+            color:#fff; font-size:11px; padding:2px 6px; }
+  .datebar .num{ font-weight:800; font-size:13px; }
+  .datebar .waktu{ font-size:10px; opacity:.9; }
+  .body{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+         text-align:center; padding:6px 5px; gap:3px; }
+  .foto{ width:52px; height:52px; border-radius:5px; background:var(--soft); display:flex;
+         align-items:center; justify-content:center; font-size:9px; color:#999;
+         border:1px solid #e5e5e5; overflow:hidden; }
+  .foto img{ width:100%; height:100%; object-fit:cover; }
+  .nama{ font-size:11px; font-weight:700; line-height:1.15; }
+  .cell.event .body{ background:#eef6f1; }
+  .cell.event .nama{ color:var(--green); font-style:italic; }
+  .cell.empty{ background:#fafafa; }
+  .cell.ralat .body{ background:#ffebee; }
+  .cell.ralat .nama{ color:#c62828; }
+  .ralat-tag{ font-size:8px; color:#c62828; font-weight:700; }
+  .subuh-tag{ background:#1565c0; color:#fff; font-size:8px; font-weight:700; padding:1px 5px;
+              border-radius:3px; margin-bottom:2px; display:inline-block; }
+
+  .footer{ display:flex; margin-top:2px; }
+  .muslimah{ background:#faf2fb; border-top:3px solid var(--muslimah); flex:1; padding:8px 14px;
+             display:flex; align-items:center; gap:14px; }
+  .muslimah .lbl{ color:var(--muslimah); font-weight:800; font-size:14px; line-height:1.1; white-space:nowrap; }
+  .muslimah .items{ display:flex; gap:18px; flex-wrap:wrap; }
+  .it{ font-size:10px; line-height:1.3; }
+  .it b{ display:block; color:#333; }
+  .infaq{ background:var(--maroon); color:#fff; padding:8px 18px; display:flex; align-items:center;
+          gap:14px; min-width:300px; }
+  .infaq .txt .t{ font-size:13px; font-style:italic; }
+  .infaq .txt .acc{ font-size:19px; font-weight:800; letter-spacing:1px; }
+  .infaq .txt .nm{ font-size:11px; }
+  .infaq .qr{ width:64px; height:64px; background:#fff; padding:3px; border-radius:4px; }
+  .infaq .qr img{ width:100%; height:100%; }
+  .prep{ font-size:9px; color:#777; padding:4px 14px; border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="top">
+    <div class="month"><div class="m" id="bulan"></div><div class="y" id="tahun"></div></div>
+    <div class="titlebar">
+      <div class="khat" id="khat"></div>
+      <div class="en">
+        <h1>JADUAL KULIAH MASJID AS-SALAM</h1>
+        <p>MASJID AS-SALAM, PETALING UTAMA · PETALING JAYA, SELANGOR</p>
+      </div>
+    </div>
+    <div class="badge" id="logo"></div>
+  </div>
+
+  <table>
+    <thead><tr><th>ISNIN</th><th>SELASA</th><th>RABU</th><th>KHAMIS</th><th>JUMAAT</th><th>SABTU</th><th>AHAD</th></tr></thead>
+    <tbody id="grid"></tbody>
+  </table>
+
+  <div class="footer">
+    <div class="muslimah">
+      <div class="lbl">KULIAH<br>MUSLIMAH</div>
+      <div class="items" id="muslimah"></div>
+    </div>
+    <div class="infaq">
+      <div class="txt">
+        <div class="t">Sumbangan Infaq</div>
+        <div class="acc">1204 7010 041973</div>
+        <div class="nm">Masjid As-Salam · Bank Islam</div>
+      </div>
+      <div class="qr" id="qr"></div>
+    </div>
+  </div>
+  <div class="prep">Disediakan oleh: Lajnah Dakwah dan Pendidikan Masjid As-Salam</div>
+</div>
+
+<script>
+// Data disuntik oleh render.py sebagai window.__DATA__, window.__MASTER__, window.__ASSETS__
+const D = window.__DATA__;
+const MASTER = window.__MASTER__;
+const A = window.__ASSETS__ || {};   // { logo, khat, qr } path relatif
+
+document.getElementById("bulan").textContent = D.bulan;
+document.getElementById("tahun").textContent = D.tahun;
+
+// aset header
+document.getElementById("khat").innerHTML = A.khat
+  ? `<img src="${A.khat}" alt="khat">` : `<span class="fallback">جدول كليه مسجد السلام</span>`;
+document.getElementById("logo").innerHTML = A.logo
+  ? `<img src="${A.logo}" alt="logo">` : `<span class="fallback">AS<br>SALAM</span>`;
+document.getElementById("qr").innerHTML = A.qr ? `<img src="${A.qr}" alt="QR infaq">` : "";
+
+function fotoFor(nama){
+  const file = MASTER[nama];
+  if(!file) return {html:`<div class="foto">FOTO</div>`, ralat:true};
+  return {html:`<div class="foto"><img src="assets/ustaz/${file}" onerror="this.parentNode.textContent='FOTO'"></div>`, ralat:false};
+}
+
+function personBlock(nama){
+  const f = fotoFor(nama);
+  const tag = f.ralat ? `<span class="ralat-tag">⚠ NAMA TAK DALAM MASTER</span>` : "";
+  return { html:`${f.html}<div class="nama">${nama}</div>${tag}`, ralat:f.ralat };
+}
+
+function cell(d){
+  if(!d) return `<td class="empty"></td>`;
+  const info = D.jadual[String(d)];
+  if(!info) return `<td><div class="cell"><div class="datebar"><span class="num">${d}</span></div><div class="body"></div></div></td>`;
+
+  if(info.event){
+    return `<td><div class="cell event">
+      <div class="datebar"><span class="num">${d}</span><span class="waktu">Maghrib</span></div>
+      <div class="body"><div class="nama">${info.event}</div></div></div></td>`;
+  }
+
+  if(info.subuh){
+    const s = personBlock(info.subuh), m = personBlock(info.maghrib||"");
+    return `<td><div class="cell" style="flex-direction:row">
+      <div style="flex:1;display:flex;flex-direction:column;border-right:1px solid #eee">
+        <div class="datebar"><span class="num">${d}</span><span class="waktu">Subuh</span></div>
+        <div class="body ${s.ralat?'':''}"><span class="subuh-tag">KULIAH SUBUH</span>${s.html}</div></div>
+      <div style="flex:1;display:flex;flex-direction:column">
+        <div class="datebar"><span class="waktu">Maghrib</span></div>
+        <div class="body">${m.html}</div></div></div></td>`;
+  }
+
+  const p = personBlock(info.maghrib||"");
+  return `<td><div class="cell ${p.ralat?'ralat':''}">
+    <div class="datebar"><span class="num">${d}</span><span class="waktu">Maghrib</span></div>
+    <div class="body">${p.html}</div></div></td>`;
+}
+
+let html="", day=1, started=false;
+for(let w=0; w<6 && day<=D.hari_dalam_bulan; w++){
+  html+="<tr>";
+  for(let wd=0; wd<7; wd++){
+    if(!started && wd===D.mula_hari) started=true;
+    if(started && day<=D.hari_dalam_bulan){ html+=cell(day); day++; }
+    else html+=cell(null);
+  }
+  html+="</tr>";
+}
+document.getElementById("grid").innerHTML=html;
+document.getElementById("muslimah").innerHTML = (D.muslimah||[]).map(m=>
+  `<div class="it"><b>${m.tarikh}</b>${m.jam}<br>${m.nama}</div>`).join("");
+</script>
+</body>
+</html>

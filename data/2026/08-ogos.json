@@ -1,0 +1,48 @@
+{
+  "bulan": "OGOS",
+  "tahun": "2026",
+  "mula_hari": 5,
+  "_nota_mula_hari": "1 Ogos jatuh hari apa? Isnin=0, Selasa=1, Rabu=2, Khamis=3, Jumaat=4, Sabtu=5, Ahad=6. 1 Ogos 2026 = Sabtu = 5.",
+  "hari_dalam_bulan": 31,
+
+  "jadual": {
+    "1":  { "maghrib": "USTAZ FIRDAUS HJ MAHADI" },
+    "2":  { "subuh": "USTAZ SYUHUD RAZALI", "maghrib": "USTAZ ANAS MALEK" },
+    "3":  { "maghrib": "USTAZ ROZAIMAN ISMAIL" },
+    "4":  { "maghrib": "USTAZ IZMIR FAREEZ" },
+    "5":  { "maghrib": "USTAZ AMIN QUSYAIRI" },
+    "6":  { "event": "Bacaan Yasin & Tahlil — Imam Bertugas" },
+    "7":  { "maghrib": "USTAZ ADAM AZHARI" },
+    "8":  { "maghrib": "USTAZ SAAD HARMAN SHAH RANIRI" },
+    "9":  { "subuh": "USTAZ HISYAM ZAKARIA", "maghrib": "USTAZ LUTFI ISMAIL" },
+    "10": { "maghrib": "USTAZ DR. ZUHAILI" },
+    "11": { "maghrib": "USTAZ WAN MARZUKI MAD JUNOH" },
+    "12": { "maghrib": "USTAZ RAHIMI MD SAAD" },
+    "13": { "event": "Bacaan Yasin & Tahlil — Imam Bertugas" },
+    "14": { "maghrib": "USTAZ AHMAD HISYAM" },
+    "15": { "event": "(Jemputan)" },
+    "16": { "subuh": "USTAZ HAKIMIN HAFIZ", "maghrib": "USTAZ ABDULLAH IBRAHIM" },
+    "17": { "maghrib": "USTAZ LT KOL HJ MOHD NAIM HJ AHMAD" },
+    "18": { "maghrib": "USTAZ DR. HJ. ZAINAL ABIDIN KASMIN" },
+    "19": { "maghrib": "USTAZ ABD JALIL HANAFEE" },
+    "20": { "event": "Bacaan Yasin & Tahlil — Imam Bertugas" },
+    "21": { "maghrib": "USTAZ NAJMUL KHAIRY" },
+    "22": { "maghrib": "USTAZ MALIK HAFIFI" },
+    "23": { "subuh": "USTAZ NOR AHMAD HASBULLAH", "maghrib": "IMAM HADI" },
+    "24": { "maghrib": "USTAZ EHSAN MOHD DAUD" },
+    "25": { "event": "Majlis Sambutan Maulidur Rasul" },
+    "26": { "maghrib": "USTAZ MEEFTAH ANUAR" },
+    "27": { "event": "Bacaan Yasin & Tahlil — Imam Bertugas" },
+    "28": { "maghrib": "USTAZ HISYAM ZAKARIA" },
+    "29": { "maghrib": "USTAZ YASSIR SALLEH" },
+    "30": { "maghrib": "USTAZ AZAHARI MUSA" },
+    "31": { "maghrib": "USTAZ YASSIR ABD MANAN" }
+  },
+
+  "muslimah": [
+    { "tarikh": "1 OGOS (SABTU)",  "jam": "9:00 PAGI",  "nama": "USTAZAH ADIBAH" },
+    { "tarikh": "8 OGOS (SABTU)",  "jam": "10:00 PAGI", "nama": "USTAZAH NORHAFIZAH" },
+    { "tarikh": "15 OGOS (SABTU)", "jam": "2:30 PTG",   "nama": "USTAZAH ZAWIYAH" },
+    { "tarikh": "23 OGOS (AHAD)",  "jam": "2:30 PTG",   "nama": "USTAZAH FADILAH" }
+  ]
+}
