@@ -379,6 +379,14 @@
       "tile": "ki-Ustaz-Zulkifli-bin-Mohd-Nor.png",
       "tajuk": "Umum",
       "nama_baris": null
+    },
+    "USTAZ DR. MUHAMAD ALIHANAFIAH BIN NORASID": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Dr. Muhamad Alihanafiah bin Norasid",
+      "nama_fail": "Ustaz Dr. Muhamad Alihanafiah bin Norasid",
+      "tile": "ki-Muhamad-Alihanafiah-bin-Norasid.png",
+      "tajuk": "",
+      "nama_baris": null
     }
   }
 }
