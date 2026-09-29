@@ -17,7 +17,14 @@ const bulanSemasa = () =>
 
 // --------------------------------------------------------------- utiliti
 async function api(laluan, pilihan = {}) {
-  const r = await fetch(laluan, pilihan);
+  let r;
+  try {
+    r = await fetch(laluan, pilihan);
+  } catch {
+    // fetch hanya gagal begini bila pelayan tempatan tidak berjalan
+    throw new Error('Pelayan dashboard tidak berjalan. Klik dua kali MULA-DASHBOARD.bat, '
+                    + 'kemudian cuba lagi — data dalam borang ini tidak hilang.');
+  }
   const teks = await r.text();
   let badan;
   try { badan = teks ? JSON.parse(teks) : {}; } catch { badan = { ralat: teks }; }
@@ -133,6 +140,8 @@ function lukisPipeline() {
       ${adaSumber ? `<ul class="file-list">${b.sumber.fail.slice(0, 5)
           .map((f) => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}
       <div class="act">
+        ${adaSumber && !b.ada_data
+          ? `<button class="btn btn-sm btn-utama" data-mentah>Isi &amp; jana JSON →</button>` : ''}
         <button class="btn btn-ghost btn-sm" data-buka="${esc(b.sumber.folder)}">Buka folder input</button>
       </div>
     </div>`);
@@ -147,11 +156,14 @@ function lukisPipeline() {
       ${b.bulanan.siap ? chip('ok', `Siap · ${esc(b.label)}`) : dataChip}
       <p>${b.ada_data
             ? `Menjana satu poster kalendar penuh untuk ${esc(b.label)}.`
-            : `Sediakan <code>data/${b.tahun}/${esc(b.slug)}.json</code> dahulu.`}</p>
+            : `Isi jadual daripada imej AJK untuk menghasilkan
+               <code>data/${b.tahun}/${esc(b.slug)}.json</code>.`}</p>
       <div class="act">
-        <button class="btn btn-sm" data-jana="bulanan" ${b.ada_data ? '' : 'disabled'}>
-          ${b.bulanan.siap ? 'Jana semula' : 'Jana jadual bulanan'}
-        </button>
+        ${b.ada_data
+          ? `<button class="btn btn-sm" data-jana="bulanan">
+               ${b.bulanan.siap ? 'Jana semula' : 'Jana jadual bulanan'}</button>
+             <button class="btn btn-ghost btn-sm" data-mentah>Ubah data</button>`
+          : `<button class="btn btn-sm" data-mentah>Isi data jadual</button>`}
         <button class="btn btn-ghost btn-sm" data-buka="${esc(b.bulanan.folder)}">Buka folder</button>
       </div>
     </div>`);
@@ -394,6 +406,8 @@ document.addEventListener('click', (e) => {
   const jana = e.target.closest('[data-jana]');
   if (jana) return janaKerja(jana.dataset.jana);
 
+  if (e.target.closest('[data-mentah]')) return bukaMentah();
+
   const slotUbah = e.target.closest('[data-slot-ubah]');
   if (slotUbah) {
     const [tarikh, slot] = slotUbah.dataset.slotUbah.split('|');
@@ -510,8 +524,10 @@ $('#lapis-gambar').addEventListener('click', (e) => {
 });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
+  if (!$('#lapis-daftar').hidden) return tutupDaftar();   // popup teratas dahulu
   if (!$('#lapis-gambar').hidden) tutupPilihGambar();
   if (!$('#lapis-slot').hidden) tutupBorangSlot();
+  if (!$('#lapis-mentah').hidden) tutupMentah();
 });
 $('#pilih-kosong').addEventListener('click', async () => {
   const kanon = gambarUntuk;
@@ -627,6 +643,456 @@ $('#borang-masjid').addEventListener('submit', async (e) => {
     e.target.reset();
     await muatState();
   } catch (err) { toast(err.message, true); }
+});
+
+// ------------------------------------------- isi jadual daripada imej AJK
+// Borang harian -> /api/mentah -> buat_bulan.py -> data/<tahun>/<MM>-<bulan>.json.
+// Setiap nama disemak (tanpa menulis) semasa menaip supaya salah ejaan
+// dan nama baharu kelihatan SEBELUM fail dijana.
+const mentah = { borang: null, hari: [], mus: [], hasil: null, berubah: false,
+                 imej: 0, timer: null, seq: 0, asalEjaan: {} };
+
+const JENIS = { kuliah: 'Kuliah', yasin: 'Yasin & Tahlil', acara: 'Acara lain' };
+
+async function bukaMentah() {
+  const b = bulanSemasa();
+  if (!b) return;
+  let f;
+  try {
+    f = await api(`/api/mentah?bulan=${kunciBulan(b)}`);
+  } catch (e) { return toast(e.message, true); }
+
+  Object.assign(mentah, {
+    borang: f, hasil: null, berubah: false, imej: 0, asalEjaan: {},
+    hari: f.hari.map((r) => ({ ...r })),
+    mus: f.muslimat.map((m) => ({ ...m })),
+  });
+
+  $('#dl-penceramah').innerHTML = f.penceramah.map((n) => `<option value="${esc(n)}">`).join('');
+  $('#dl-ustazah').innerHTML = f.ustazah.map((n) => `<option value="${esc(n)}">`).join('');
+  $('#mentah-tajuk').textContent = `Isi jadual — ${f.label}`;
+  $('#mentah-asal').textContent = {
+    data: `Dimuat daripada ${f.fail_data}`,
+    mentah: 'Dimuat daripada jadual-mentah.txt',
+    baharu: 'Borang baharu',
+  }[f.asal];
+  $('#mentah-jana').textContent = f.ada_data ? 'Jana semula fail JSON' : 'Jana fail JSON';
+
+  lukisImejMentah();
+  lukisHariMentah();
+  lukisMusMentah();
+  lukisRingkasMentah();
+  $('#lapis-mentah').hidden = false;
+  semakMentah();
+}
+
+function tutupMentah(paksa = false) {
+  if (!paksa && mentah.berubah
+      && !confirm('Perubahan dalam borang belum dijana. Tutup dan buang perubahan?')) return;
+  $('#lapis-mentah').hidden = true;
+  clearTimeout(mentah.timer);
+}
+
+// ---- imej sumber
+function lukisImejMentah() {
+  const sumber = mentah.borang.sumber;
+  const ada = sumber.length > 0;
+  $('#mentah-tab').innerHTML = sumber.length > 1
+    ? sumber.map((s, i) => `<button type="button" data-imej="${i}"
+         class="${i === mentah.imej ? 'is-on' : ''}" title="${esc(s)}">
+         ${i + 1}. ${esc(s.split('/').pop())}</button>`).join('')
+    : '';
+  const img = $('#mentah-img');
+  img.hidden = !ada;
+  $('#mentah-tiada-imej').hidden = ada;
+  $('#mentah-penuh').hidden = !ada;
+  $('#mentah-kanvas').classList.remove('zum');
+  if (ada) {
+    const url = `/fail?path=${encodeURIComponent(sumber[mentah.imej])}`;
+    img.src = url;
+    $('#mentah-penuh').href = url;
+  }
+}
+
+$('#mentah-tab').addEventListener('click', (e) => {
+  const t = e.target.closest('[data-imej]');
+  if (!t) return;
+  mentah.imej = Number(t.dataset.imej);
+  lukisImejMentah();
+});
+$('#mentah-kanvas').addEventListener('click', () => {
+  if (mentah.borang?.sumber.length) $('#mentah-kanvas').classList.toggle('zum');
+});
+
+// ---- baris harian
+function selMentah(r) {
+  if (r.jenis === 'yasin') {
+    return '<td colspan="2" class="ev">Bacaan Yasin &amp; Tahlil · Imam Bertugas</td>';
+  }
+  if (r.jenis === 'acara') {
+    return `<td colspan="2"><input data-f="acara" value="${esc(r.acara)}"
+              placeholder="cth: Majlis Sambutan Maulidur Rasul"></td>`;
+  }
+  const ahad = r.nama_hari === 'Ahad';
+  const medan = (slot) => `<td>
+      <input data-f="${slot}" list="dl-penceramah" value="${esc(r[slot])}"
+             placeholder="${slot === 'subuh' && !ahad ? '—' : 'Nama penceramah'}">
+      <span class="padan" data-p="${r.hari}|${slot}"></span></td>`;
+  return medan('subuh') + medan('maghrib');
+}
+
+function barisMentah(r) {
+  return `<tr data-h="${r.hari}" class="${r.nama_hari === 'Ahad' ? 'ahad' : ''}">
+    <td class="tkh">${r.hari}<small>${esc(r.nama_hari)}</small></td>
+    <td><select data-f="jenis">${Object.entries(JENIS).map(([k, v]) =>
+      `<option value="${k}" ${r.jenis === k ? 'selected' : ''}>${v}</option>`).join('')}
+    </select></td>
+    ${selMentah(r)}
+  </tr>`;
+}
+
+function lukisHariMentah() {
+  $('#mentah-hari').innerHTML = mentah.hari.map(barisMentah).join('');
+}
+
+$('#mentah-hari').addEventListener('input', (e) => {
+  const tr = e.target.closest('tr[data-h]');
+  const f = e.target.dataset.f;
+  if (!tr || !f) return;
+  const r = mentah.hari.find((x) => x.hari === Number(tr.dataset.h));
+  r[f] = e.target.value;
+  delete mentah.asalEjaan[`${r.hari}|${f}`];   // pengguna menaip semula
+  if (f === 'jenis') {
+    tr.outerHTML = barisMentah(r);
+    const baru = $(`#mentah-hari tr[data-h="${r.hari}"] input`);
+    if (baru) baru.focus();
+  }
+  ubahMentah();
+});
+
+// ---- kuliah muslimat
+function lukisMusMentah() {
+  $('#mentah-mus').innerHTML = mentah.mus.length
+    ? mentah.mus.map((m, i) => `<tr data-i="${i}">
+        <td><input data-f="hari" type="number" min="1" max="${mentah.hari.length}"
+                   value="${esc(m.hari)}" placeholder="Hari"></td>
+        <td><input data-f="jam" value="${esc(m.jam)}" placeholder="9:00 PAGI"></td>
+        <td><input data-f="nama" list="dl-ustazah" value="${esc(m.nama)}" placeholder="Nama ustazah">
+            <span class="padan" data-p="${esc(m.hari)}|muslimah"></span></td>
+        <td><button type="button" class="btn-x" data-buang="${i}" title="Buang baris">×</button></td>
+      </tr>`).join('')
+    : '<tr><td colspan="4" class="muted">Tiada kuliah muslimat. Klik “Tambah baris” jika ada.</td></tr>';
+}
+
+$('#mentah-mus').addEventListener('input', (e) => {
+  const tr = e.target.closest('tr[data-i]');
+  const f = e.target.dataset.f;
+  if (!tr || !f) return;
+  const m = mentah.mus[Number(tr.dataset.i)];
+  delete mentah.asalEjaan[`${m.hari}|muslimah`];
+  m[f] = f === 'hari' ? (e.target.value ? Number(e.target.value) : '') : e.target.value;
+  if (f === 'hari') $('.padan', tr).dataset.p = `${m.hari}|muslimah`;
+  ubahMentah();
+});
+$('#mentah-mus').addEventListener('click', (e) => {
+  const x = e.target.closest('[data-buang]');
+  if (!x) return;
+  mentah.mus.splice(Number(x.dataset.buang), 1);
+  lukisMusMentah();
+  ubahMentah();
+});
+$('#mentah-tambah-mus').addEventListener('click', () => {
+  mentah.mus.push({ hari: '', jam: '', nama: '' });
+  lukisMusMentah();
+  $('#mentah-mus tr:last-child input').focus();
+});
+
+// ---- semakan langsung
+function ubahMentah() {
+  mentah.berubah = true;
+  clearTimeout(mentah.timer);
+  mentah.timer = setTimeout(semakMentah, 450);
+}
+
+function badanMentah(lebih = {}) {
+  return JSON.stringify({
+    bulan: `${mentah.borang.tahun}-${String(mentah.borang.bulan).padStart(2, '0')}`,
+    hari: mentah.hari,
+    muslimat: mentah.mus,
+    ...lebih,
+  });
+}
+
+async function semakMentah() {
+  const seq = ++mentah.seq;
+  try {
+    const h = await api('/api/mentah', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: badanMentah(),
+    });
+    if (seq !== mentah.seq) return;   // ada semakan lebih baharu
+    mentah.hasil = h;
+    lukisPadanMentah();
+    lukisRingkasMentah();
+  } catch (e) {
+    if (seq !== mentah.seq) return;
+    mentah.hasil = null;
+    $('#mentah-ringkas').innerHTML = chip('stop', e.message);
+  }
+}
+
+// Tetapkan nilai satu medan nama (DOM + model) — dipakai oleh auto-isi,
+// butang "Guna nama ini" dan selepas daftar penceramah baharu.
+function setNamaMentah(input, nilai) {
+  input.value = nilai;
+  const tr = input.closest('tr');
+  const f = input.dataset.f;
+  if (tr.dataset.h) {
+    mentah.hari.find((x) => x.hari === Number(tr.dataset.h))[f] = nilai;
+  } else if (tr.dataset.i !== undefined) {
+    mentah.mus[Number(tr.dataset.i)][f] = nilai;
+  }
+  mentah.berubah = true;
+}
+
+function lukisPadanMentah() {
+  const { padanan, hilang } = mentah.hasil;
+  let ditukar = false;
+  $$('#lapis-mentah .padan').forEach((el) => {
+    const input = el.previousElementSibling;
+    const nilai = input ? input.value.trim() : '';
+    const p = padanan[el.dataset.p];
+    const muslimah = el.dataset.p.endsWith('|muslimah');
+    el.className = 'padan';
+    el.innerHTML = '';
+    if (!nilai || !p) return;
+
+    // Padanan yakin -> terus guna nama standard. Medan yang sedang ditaip
+    // dibiarkan dahulu; ia ditukar sebaik sahaja pengguna keluar dari medan.
+    if ((p.tahap === 'tepat' || p.tahap === 'auto') && p.nama && nilai !== p.nama) {
+      if (document.activeElement !== input) {
+        mentah.asalEjaan[el.dataset.p] = nilai;
+        setNamaMentah(input, p.nama);
+        ditukar = true;
+      }
+    }
+    const asal = mentah.asalEjaan[el.dataset.p];
+
+    if (p.tahap === 'tepat' || p.tahap === 'auto') {
+      el.classList.add('ok');
+      el.textContent = (asal && asal !== input.value
+        ? `✓ Diseragamkan daripada “${asal}”` : '✓ Dalam rekod')
+        + (p.sumber ? ` · ikut ${p.sumber}` : '');
+    } else if (p.tahap === 'sahkan') {
+      el.classList.add('warn');
+      el.innerHTML = `? Mungkin <b>${esc(p.nama)}</b>
+        <button type="button" class="btn-pautan" data-guna="${esc(p.nama)}">Guna nama ini</button>
+        ${muslimah ? '' : '<button type="button" class="btn-pautan" data-daftar>+ Daftar baharu</button>'}`;
+    } else {
+      el.classList.add('stop');
+      el.innerHTML = muslimah
+        ? '✗ Tiada dalam rekod ustazah (ustazah-master.json)'
+        : `✗ Tiada dalam rekod
+           <button type="button" class="btn-pautan" data-daftar>+ Daftar penceramah baharu</button>`;
+    }
+    const kanon = p.tahap === 'tiada' ? null : (asal ? input.value : p.nama);
+    if (kanon && hilang.includes(kanon)) {
+      el.insertAdjacentHTML('beforeend', ' · <span class="warn">tiada gambar jadual bulanan</span>');
+    }
+  });
+  // Nama telah ditukar kepada ejaan standard -> kira semula ringkasan isu.
+  if (ditukar) {
+    clearTimeout(mentah.timer);
+    mentah.timer = setTimeout(semakMentah, 50);
+  }
+}
+
+// Butang dalam petunjuk padanan
+$('#lapis-mentah').addEventListener('click', (e) => {
+  const guna = e.target.closest('[data-guna]');
+  const daftar = e.target.closest('[data-daftar]');
+  if (!guna && !daftar) return;
+  const input = e.target.closest('td').querySelector('input');
+  if (guna) {
+    setNamaMentah(input, guna.dataset.guna);
+    clearTimeout(mentah.timer);
+    semakMentah();
+  } else {
+    bukaDaftar(input);
+  }
+});
+
+// Keluar dari medan nama -> semak serta-merta supaya auto-isi berlaku.
+$('#lapis-mentah').addEventListener('change', (e) => {
+  if (!e.target.matches('input[list]')) return;
+  clearTimeout(mentah.timer);
+  semakMentah();
+});
+
+// ------------------------------------------------ daftar penceramah baharu
+const daftar = { input: null, mentah: '', sentuh: {} };
+
+// "UST DR.ALIHANAFIAH" -> "USTAZ DR. ALIHANAFIAH" (ikut gaya rekod sedia ada)
+function namaStandard(mentahNama) {
+  const t = mentahNama.toUpperCase().replace(/\./g, '. ').replace(/[^A-Z0-9'. -]/g, ' ')
+    .split(/\s+/).map((x) => x.replace(/\.+$/, '')).filter(Boolean);
+  const bersih = t.filter((x) => !['UST', 'USTZ', 'USTAZ'].includes(x))
+    .map((x) => (x === 'DR' ? 'DR.' : x));
+  return (bersih[0] === 'IMAM' ? bersih : ['USTAZ', ...bersih]).join(' ');
+}
+
+function namaPoster(kanon) {
+  const kecil = { BIN: 'bin', BINTI: 'binti' };
+  const titik = { HJ: 'Hj.', LT: 'Lt.', KOL: 'Kol.', 'DR.': 'Dr.' };
+  const w = kanon.split(/\s+/).filter(Boolean).map((x) => kecil[x] || titik[x]
+    || x.charAt(0) + x.slice(1).toLowerCase());
+  return (w[0] === 'Imam' ? ['Ustaz', ...w] : w).join(' ');
+}
+
+function failGambar(kanon) {
+  const w = kanon.replace(/\./g, '').split(/\s+/).filter((x) => x && x !== 'USTAZ')
+    .map((x) => x.charAt(0) + x.slice(1).toLowerCase());
+  return `Ustaz-${w.join('-')}.png`;
+}
+
+function kemasDaftar() {
+  const kanon = $('#daftar-kanon').value.trim().toUpperCase();
+  if (!daftar.sentuh.poster) $('#daftar-poster').value = namaPoster(kanon);
+  if (!daftar.sentuh.gambar) $('#daftar-gambar').value = failGambar(kanon);
+  const g = $('#daftar-gambar').value.trim();
+  const ada = mentah.borang.gambar_bulanan.some((f) => f.toLowerCase() === g.toLowerCase());
+  $('#daftar-gambar-hint').textContent = ada
+    ? '✓ Fail gambar ini sudah ada.'
+    : 'Fail belum ada — simpan gambar dengan nama ini dalam assets/ustaz/. '
+      + 'Sementara itu jadual bulanan guna gambar placeholder.';
+  $('#daftar-ralat').textContent = '';
+}
+
+async function bukaDaftar(input) {
+  daftar.input = input;
+  daftar.mentah = input.value.trim();
+  daftar.sentuh = {};
+  $('#daftar-mentah').textContent = daftar.mentah;
+  $('#daftar-kanon').value = namaStandard(daftar.mentah);
+  $('#daftar-tajuk-kitab').value = '';
+  $('#daftar-gelaran').value = 'YBhg Al-Fadhil';
+  $('#dl-gambar-bulanan').innerHTML = mentah.borang.gambar_bulanan
+    .map((f) => `<option value="${esc(f)}">`).join('');
+
+  const q = state.kodMasjid ? `?masjid=${encodeURIComponent(state.kodMasjid)}` : '';
+  try {
+    const g = await api('/api/gambar' + q);
+    $('#daftar-tile').innerHTML = '<option value="">Belum ada — poster individu ditangguh</option>'
+      + g.fail.map((f) => `<option value="${esc(f.nama)}">${esc(f.nama)}${
+        f.guna ? ` (dipakai: ${esc(f.guna)})` : ''}</option>`).join('');
+  } catch { $('#daftar-tile').innerHTML = '<option value="">Belum ada</option>'; }
+
+  kemasDaftar();
+  $('#lapis-daftar').hidden = false;
+  $('#daftar-kanon').focus();
+  $('#daftar-kanon').select();
+}
+
+function tutupDaftar() {
+  $('#lapis-daftar').hidden = true;
+  daftar.input = null;
+}
+
+async function simpanDaftar() {
+  const kanon = $('#daftar-kanon').value.trim().toUpperCase();
+  if (!kanon) return ($('#daftar-ralat').textContent = 'Isikan nama standard.');
+  try {
+    const r = await api('/api/penceramah-baru', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        kanon,
+        nama_poster: $('#daftar-poster').value.trim(),
+        gelaran: $('#daftar-gelaran').value.trim(),
+        tajuk: $('#daftar-tajuk-kitab').value.trim(),
+        gambar_bulanan: $('#daftar-gambar').value.trim(),
+        tile: $('#daftar-tile').value,
+      }),
+    });
+
+    // Masukkan ke dropdown & isi setiap medan yang ditaip dengan ejaan yang sama.
+    mentah.borang.penceramah = [...mentah.borang.penceramah, r.kanon].sort();
+    $('#dl-penceramah').innerHTML = mentah.borang.penceramah
+      .map((n) => `<option value="${esc(n)}">`).join('');
+    const sasaran = daftar.mentah.toUpperCase();
+    $$('#mentah-hari input[list="dl-penceramah"]').forEach((el) => {
+      if (el === daftar.input || el.value.trim().toUpperCase() === sasaran) {
+        setNamaMentah(el, r.kanon);
+      }
+    });
+    cachePenceramah = null;
+    tutupDaftar();
+    toast(`${r.kanon} didaftarkan${r.gambar_ada ? '' : ' — gambar jadual bulanan belum ada'}.`);
+    clearTimeout(mentah.timer);
+    semakMentah();
+  } catch (e) {
+    $('#daftar-ralat').textContent = e.message;
+  }
+}
+
+$('#daftar-kanon').addEventListener('input', kemasDaftar);
+$('#daftar-poster').addEventListener('input', () => { daftar.sentuh.poster = true; });
+$('#daftar-gambar').addEventListener('input', () => { daftar.sentuh.gambar = true; kemasDaftar(); });
+$('#daftar-simpan').addEventListener('click', simpanDaftar);
+$('#borang-daftar').addEventListener('submit', (e) => { e.preventDefault(); simpanDaftar(); });
+$('#daftar-batal').addEventListener('click', tutupDaftar);
+$('#lapis-daftar').addEventListener('click', (e) => {
+  if (e.target.id === 'lapis-daftar') tutupDaftar();
+});
+
+function lukisRingkasMentah() {
+  const h = mentah.hasil;
+  if (!h) { $('#mentah-ringkas').innerHTML = chip('run', 'Menyemak…'); return; }
+  const i = h.isu;
+  const c = [];
+  if (i.tiada)  c.push(chip('stop', `${i.tiada} nama tiada dalam registry`));
+  if (i.sahkan) c.push(chip('warn', `${i.sahkan} perlu disahkan`));
+  if (i.hilang) c.push(chip('warn', `${i.hilang} tiada gambar jadual bulanan`));
+  if (i.kosong) c.push(chip('', `${i.kosong} hari belum diisi`));
+  if (i.separa) c.push(chip('', `${i.separa} hari Ahad separa`));
+  if (i.auto)   c.push(chip('ok', `${i.auto} ejaan diseragamkan`));
+  if (!i.tiada && !i.sahkan && !i.hilang && !i.kosong && !i.separa) c.unshift(chip('ok', 'Sedia dijana'));
+  $('#mentah-ringkas').innerHTML = c.join('');
+}
+
+async function janaMentah() {
+  clearTimeout(mentah.timer);
+  await semakMentah();
+  const f = mentah.borang;
+  const i = mentah.hasil?.isu;
+  if (!i) return toast('Semakan gagal — betulkan ralat dahulu.', true);
+
+  const belum = i.tiada + i.sahkan + i.hilang + i.kosong;
+  if (belum && !confirm(`Masih ada ${belum} perkara belum lengkap (lihat bahagian bawah borang).\n`
+                        + 'Jana fail JSON juga? Anda boleh ubah semula kemudian.')) return;
+  if (f.ada_data && !confirm(`${f.fail_data} sudah wujud dan akan diganti.\n`
+                             + 'Salinan lama disimpan sebagai .json.bak. Teruskan?')) return;
+
+  const btn = $('#mentah-jana');
+  btn.disabled = true;
+  try {
+    const h = await api('/api/mentah', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: badanMentah({ tulis: true, ganti: f.ada_data }),
+    });
+    toast(`${h.fail_data} berjaya dijana.`);
+    tutupMentah(true);
+    await muatState();
+  } catch (e) {
+    toast(e.message, true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+$('#mentah-jana').addEventListener('click', janaMentah);
+$('#mentah-batal').addEventListener('click', () => tutupMentah());
+$('#lapis-mentah').addEventListener('click', (e) => {
+  if (e.target.id === 'lapis-mentah') tutupMentah();
 });
 
 muatState().catch((e) => toast(e.message, true));

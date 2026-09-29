@@ -236,6 +236,30 @@ for(let w=0; w<jumBaris; w++){
 document.getElementById("grid").innerHTML=html;
 document.getElementById("muslimah").innerHTML = (D.muslimah||[]).map(m=>
   `<div class="it">${avatarForUstazah(m.nama)}<div><b>${m.tarikh}</b>${m.jam}<br><span class="ustazah-nama">${m.nama}</span></div></div>`).join("");
+
+// Jalur merah (Bank Islam / QR) dalam JK-Footer-01.png bermula condong dari
+// x≈2436 (atas) ke x≈2297 (bawah). Pastikan teks Kuliah Muslimah tamat sebelum
+// HAD_KANAN: rapatkan jarak antara item dahulu, dan hanya jika masih terlanjur
+// (cth 4 item + nama bulan panjang) kecilkan keseluruhan baris sedikit.
+function muatMuslimah(){
+  const HAD_KANAN = 2270;
+  const row = document.querySelector(".muslimah-row");
+  const items = document.getElementById("muslimah");
+  const kanan = () => row.getBoundingClientRect().right;
+  items.style.gap = row.style.gap = row.style.transform = "";   // mula semula (dipanggil 2x)
+  for (let g = 44; g >= 20 && kanan() > HAD_KANAN; g -= 4) items.style.gap = g + "px";
+  for (let g = 50; g >= 28 && kanan() > HAD_KANAN; g -= 4) row.style.gap = g + "px";
+  if (kanan() > HAD_KANAN){
+    const kiri = row.getBoundingClientRect().left;
+    row.style.transformOrigin = "left center";
+    row.style.transform = `scale(${(HAD_KANAN - kiri) / (kanan() - kiri)})`;
+  }
+}
+// Ukur semula selepas gambar tajuk & avatar dimuat (sebelum itu lebar gambar
+// tajuk = 0, jadi baris nampak muat) dan selepas font siap.
+muatMuslimah();
+window.addEventListener("load", muatMuslimah);
+document.fonts.ready.then(muatMuslimah);
 </script>
 </body>
 </html>

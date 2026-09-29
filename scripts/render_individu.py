@@ -325,6 +325,11 @@ def main() -> None:
 
     for w in amaran:
         print(f"  ! {w}")
+    luar = sorted({k["tarikh"] for k in boleh_render
+                   if not K.dalam_takwim_jakim(k["tarikh"])})
+    if luar:
+        print(f"  ! Tarikh Hijri ANGGARAN (di luar takwim JAKIM) untuk {len(luar)} hari, "
+              f"cth {luar[0].isoformat()} — jalankan: python scripts/kemas_hijri.py")
     if tiada_gambar:
         print(f"\n  ! {len(tiada_gambar)} penceramah tiada gambar berbingkai "
               f"— poster berkenaan DILANGKAU:")

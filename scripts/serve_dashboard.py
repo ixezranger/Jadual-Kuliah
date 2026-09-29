@@ -11,10 +11,12 @@ Pelayan ini HANYA untuk kegunaan tempatan (127.0.0.1) — tiada pengesahan.
 """
 from __future__ import annotations
 
+import calendar
 import json
 import mimetypes
 import os
 import pathlib
+import re
 import subprocess
 import sys
 import threading
@@ -136,6 +138,284 @@ def buka_folder(path: str) -> bool:
 
 
 # --------------------------------------------------------------------------
+# Sediakan data jadual daripada imej AJK
+#
+# Borang dashboard -> teks mentah (format jadual-mentah.txt) -> buat_bulan.py.
+# Padanan ejaan nama, corak Khamis/Ahad dan format JSON kekal di buat_bulan,
+# jadi hasilnya SAMA seperti menjalankan skrip itu dari terminal.
+# --------------------------------------------------------------------------
+IMEJ_SUMBER = {".png", ".jpg", ".jpeg", ".webp"}
+
+
+def _laluan_bulan(tahun: int, bulan: int) -> tuple[str, pathlib.Path, pathlib.Path]:
+    slug = S.bulan_slug(bulan)
+    return (slug, K.ROOT / "input" / str(tahun) / slug,
+            K.ROOT / "data" / str(tahun) / f"{slug}.json")
+
+
+def _hari_nama(tahun: int, bulan: int, h: int) -> str:
+    return K.HARI_MS[date(tahun, bulan, h).weekday()]
+
+
+def _baris_dari_data(data: dict) -> tuple[dict, list]:
+    """Fail JSON sedia ada -> baris borang (supaya boleh diubah & dijana semula)."""
+    hari = {}
+    for h_str, v in data.get("jadual", {}).items():
+        h = int(h_str)
+        if "event" in v:
+            if v["event"] == BB.TEKS_YASIN:
+                hari[h] = {"jenis": "yasin"}
+            else:
+                hari[h] = {"jenis": "acara", "acara": v["event"].replace("\n", " ")}
+        else:
+            hari[h] = {"jenis": "kuliah", "subuh": v.get("subuh", ""),
+                       "maghrib": v.get("maghrib", "")}
+    muslimat = []
+    for m in data.get("muslimah", []):
+        no = re.match(r"\s*(\d{1,2})", m.get("tarikh", ""))
+        muslimat.append({"hari": int(no.group(1)) if no else "",
+                         "jam": m.get("jam", ""), "nama": m.get("nama", "")})
+    return hari, muslimat
+
+
+def _baris_dari_mentah(teks: str) -> tuple[dict, list]:
+    jadual, mus = BB.baca_mentah_teks(teks)
+    hari = {}
+    for h, v in jadual.items():
+        if "event" in v:
+            hari[h] = ({"jenis": "yasin"} if v["event"] == BB.TEKS_YASIN
+                       else {"jenis": "acara", "acara": v["event"]})
+        else:
+            hari[h] = {"jenis": "kuliah", "subuh": v.get("subuh", ""),
+                       "maghrib": v.get("maghrib", "")}
+    return hari, [{"hari": h, "jam": j, "nama": n} for h, j, n in mus]
+
+
+def borang_mentah(tahun: int, bulan: int) -> dict:
+    """Keadaan awal borang: dari JSON sedia ada, atau jadual-mentah.txt, atau kosong."""
+    slug, input_dir, data_path = _laluan_bulan(tahun, bulan)
+    mentah_path = input_dir / "jadual-mentah.txt"
+    akhir = calendar.monthrange(tahun, bulan)[1]
+
+    asal, hari, muslimat = "baharu", {}, []
+    if data_path.exists():
+        asal = "data"
+        hari, muslimat = _baris_dari_data(K.load_json(data_path))
+    elif mentah_path.exists():
+        asal = "mentah"
+        try:
+            hari, muslimat = _baris_dari_mentah(mentah_path.read_text(encoding="utf-8"))
+        except SystemExit:
+            asal = "baharu"
+
+    baris = []
+    for h in range(1, akhir + 1):
+        nama_hari = _hari_nama(tahun, bulan, h)
+        lalai = ({"jenis": "yasin"} if nama_hari == "Khamis"
+                 else {"jenis": "kuliah"})
+        r = {"jenis": "kuliah", "subuh": "", "maghrib": "", "acara": ""}
+        r.update(hari.get(h) or lalai)
+        r.update({"hari": h, "nama_hari": nama_hari})
+        baris.append(r)
+
+    penceramah, _, ustazah = BB.muat_registry()
+    sumber = sorted(p for p in input_dir.glob("*")
+                    if p.suffix.lower() in IMEJ_SUMBER) if input_dir.exists() else []
+    gambar_bulanan = sorted((p.name for p in (K.ROOT / "assets/ustaz").glob("*.png")),
+                            key=str.lower)
+    return {
+        "tahun": tahun, "bulan": bulan, "slug": slug,
+        "label": f"{K.BULAN_MS[bulan - 1]} {tahun}",
+        "asal": asal,
+        "ada_data": data_path.exists(),
+        "fail_data": f"data/{tahun}/{slug}.json",
+        "sumber": [p.relative_to(K.ROOT).as_posix() for p in sumber],
+        "hari": baris,
+        "muslimat": muslimat,
+        "penceramah": sorted(penceramah),
+        "ustazah": sorted(ustazah),
+        "gambar_bulanan": gambar_bulanan,
+    }
+
+
+def daftar_penceramah(b: dict) -> tuple[int, dict]:
+    """Penceramah baharu -> penceramah-master.json (poster individu)
+    DAN ustaz-master.json (jadual bulanan). render.py gagal jika nama
+    dalam jadual tiada dalam ustaz-master, jadi kedua-duanya wajib."""
+    kanon = " ".join((b.get("kanon") or "").upper().split())
+    if not BB.token(kanon):
+        return 400, {"ralat": "Nama standard diperlukan"}
+
+    pm = K.load_json("data/penceramah-master.json")
+    um_path = K.ROOT / "data/ustaz-master.json"
+    um = json.loads(um_path.read_text(encoding="utf-8"))
+
+    for n in [*pm["penceramah"], *(k for k in um if not k.startswith("_"))]:
+        if n == kanon or BB.kunci(n) == BB.kunci(kanon):
+            return 409, {"ralat": f"Sudah wujud dalam rekod sebagai '{n}'", "nama": n}
+
+    tile = (b.get("tile") or "").strip() or None
+    fail_bulanan = pathlib.Path((b.get("gambar_bulanan") or "").strip()).name
+    if not fail_bulanan:
+        return 400, {"ralat": "Nama fail gambar jadual bulanan diperlukan"}
+    if not fail_bulanan.lower().endswith(".png"):
+        fail_bulanan += ".png"
+
+    nama_poster = " ".join((b.get("nama_poster") or kanon.title()).split())
+    pm["penceramah"][kanon] = {
+        "gelaran": b.get("gelaran", "YBhg Al-Fadhil"),
+        "nama_poster": nama_poster,
+        "nama_fail": nama_poster,
+        "tile": tile,
+        "tajuk": (b.get("tajuk") or "").strip(),
+        "nama_baris": None,
+    }
+    K.save_json("data/penceramah-master.json", pm)
+
+    # Tambah di hujung tanpa menyusun semula fail (kekalkan gaya & baris kosong).
+    teks = um_path.read_text(encoding="utf-8").rstrip()
+    if not teks.endswith("}"):
+        return 500, {"ralat": "Format ustaz-master.json tidak dijangka"}
+    entri = f"  {json.dumps(kanon, ensure_ascii=False)}: {json.dumps(fail_bulanan, ensure_ascii=False)}"
+    teks = teks[:-1].rstrip() + ",\n" + entri + "\n}\n"
+    json.loads(teks)  # pastikan masih JSON sah sebelum menulis
+    um_path.write_text(teks, encoding="utf-8")
+
+    return 200, {"ok": True, "kanon": kanon, "gambar_bulanan": fail_bulanan,
+                 "gambar_ada": (K.ROOT / "assets/ustaz" / fail_bulanan).exists()}
+
+
+def _bersih(s) -> str:
+    # '|' ialah pemisah dalam format mentah; baris baharu memecah format.
+    return " ".join(str(s or "").replace("|", " ").split())
+
+
+def jadi_mentah(tahun: int, bulan: int, hari: list[dict],
+                muslimat: list[dict], sumber: list[str]) -> str:
+    """Baris borang -> teks format jadual-mentah.txt."""
+    b = ["// Dijana daripada borang dashboard (Isi & jana JSON).",
+         *[f"//   {pathlib.Path(s).name}" for s in sumber],
+         f"// {BB.BULAN_MS[bulan - 1]} {tahun}", ""]
+    for r in sorted(hari, key=lambda r: int(r["hari"])):
+        h, jenis = int(r["hari"]), r.get("jenis")
+        if jenis == "yasin":
+            b.append(f"{h:<3} #yasin")
+        elif jenis == "acara":
+            b.append(f"{h:<3} #event {_bersih(r.get('acara'))}".rstrip())
+        else:
+            subuh, maghrib = _bersih(r.get("subuh")), _bersih(r.get("maghrib"))
+            # Ahad sentiasa dua slot (sama seperti corak lalai buat_bulan).
+            ahad = date(tahun, bulan, h).weekday() == BB.AHAD
+            if subuh or (ahad and maghrib):
+                b.append(f"{h:<3} {subuh} | {maghrib}".rstrip())
+            else:
+                b.append(f"{h:<3} {maghrib}".rstrip())
+
+    mus = [m for m in muslimat if str(m.get("hari", "")).strip() and _bersih(m.get("nama"))]
+    if mus:
+        b += ["", "[muslimat]"]
+        for m in mus:
+            b.append(f"{int(m['hari']):<2} | {_bersih(m.get('jam'))} | {_bersih(m['nama'])}")
+    return "\n".join(b) + "\n"
+
+
+def ingatan_padanan(penceramah: list[str]) -> dict[str, str]:
+    """Ejaan mentah yang sudah pernah disahkan pada bulan-bulan lepas.
+
+    Setiap bulan yang ada jadual-mentah.txt DAN fail data dipasangkan ikut
+    tarikh/slot: ejaan dalam imej AJK -> nama standard yang akhirnya dipakai.
+    Jadi 'UST.LUTFFI' yang disahkan sebagai USTAZ LUTFI ISMAIL pada September
+    terus dikenali pada bulan-bulan seterusnya.
+    """
+    ingat: dict[str, str] = {}
+    sah = set(penceramah)
+    for mp in sorted((K.ROOT / "input").glob("*/*/jadual-mentah.txt")):
+        dp = K.ROOT / "data" / mp.parent.parent.name / f"{mp.parent.name}.json"
+        if not dp.exists():
+            continue
+        try:
+            mentah_jadual, _ = BB.baca_mentah_teks(mp.read_text(encoding="utf-8"))
+            data = K.load_json(dp).get("jadual", {})
+        except (SystemExit, ValueError):
+            continue
+        for h, v in mentah_jadual.items():
+            for slot in ("subuh", "maghrib"):
+                asal, akhir = v.get(slot), data.get(str(h), {}).get(slot)
+                if asal and akhir in sah and BB.kunci(asal):
+                    ingat[BB.kunci(asal)] = akhir
+    return ingat
+
+
+def proses_mentah(b: dict) -> tuple[int, dict]:
+    """Semak (dan jika diminta, tulis) jadual daripada borang."""
+    try:
+        tahun, bulan = (int(x) for x in (b.get("bulan") or "").split("-"))
+    except ValueError:
+        return 400, {"ralat": "bulan (YYYY-MM) diperlukan"}
+
+    slug, input_dir, data_path = _laluan_bulan(tahun, bulan)
+    sumber = [p.name for p in input_dir.glob("*")
+              if p.suffix.lower() in IMEJ_SUMBER] if input_dir.exists() else []
+    teks = jadi_mentah(tahun, bulan, b.get("hari") or [], b.get("muslimat") or [], sumber)
+
+    penceramah, ustaz, ustazah = BB.muat_registry()
+    try:
+        mj, mm = BB.baca_mentah_teks(teks)
+        doc, laporan = BB.bina(tahun, bulan, mj, mm, penceramah, ustazah)
+    except SystemExit as e:
+        return 400, {"ralat": str(e)}
+    except ValueError as e:  # cth tarikh muslimat di luar bulan
+        return 400, {"ralat": f"tarikh tidak sah: {e}"}
+
+    s = BB.semakan(doc, laporan, ustaz)
+
+    # Padanan untuk SETIAP nama yang diisi (termasuk yang tepat), supaya
+    # borang boleh menggantikan ejaan mentah dengan nama standard.
+    def padan(mentah_nama: str, senarai: list[str], ingat: dict | None = None) -> dict:
+        nama, skor, tahap = BB.padan(mentah_nama, senarai)
+        if tahap != "tepat" and ingat and BB.kunci(mentah_nama) in ingat:
+            # pernah disahkan pada bulan lepas — lebih dipercayai daripada teka
+            return {"tahap": "auto", "nama": ingat[BB.kunci(mentah_nama)],
+                    "skor": 1.0, "sumber": "bulan lepas"}
+        return {"tahap": tahap, "nama": nama, "skor": round(skor, 2)}
+
+    ingat = ingatan_padanan(penceramah)
+    padanan = {}
+    for r in b.get("hari") or []:
+        if r.get("jenis", "kuliah") != "kuliah":
+            continue
+        for slot in ("subuh", "maghrib"):
+            if _bersih(r.get(slot)):
+                padanan[f"{r['hari']}|{slot}"] = padan(_bersih(r[slot]), penceramah, ingat)
+    for m in b.get("muslimat") or []:
+        if str(m.get("hari", "")).strip() and _bersih(m.get("nama")):
+            padanan[f"{m['hari']}|muslimah"] = padan(_bersih(m["nama"]), sorted(ustazah))
+
+    hasil = {
+        "padanan": padanan,
+        "isu": {k: len(v) for k, v in s.items()},
+        "hilang": s["hilang"],
+        "fail_data": f"data/{tahun}/{slug}.json",
+        "ditulis": False,
+    }
+    if not b.get("tulis"):
+        return 200, hasil
+
+    if data_path.exists() and not b.get("ganti"):
+        return 409, {"ralat": f"{data_path.name} sudah wujud", "wujud": True}
+
+    input_dir.mkdir(parents=True, exist_ok=True)
+    (input_dir / "jadual-mentah.txt").write_text(teks, encoding="utf-8")
+    data_path.parent.mkdir(parents=True, exist_ok=True)
+    if data_path.exists():
+        # Salinan keselamatan — suntingan slot terdahulu masih boleh dirujuk.
+        data_path.with_suffix(".json.bak").write_bytes(data_path.read_bytes())
+    data_path.write_text(BB.jadi_teks(doc), encoding="utf-8")
+    hasil["ditulis"] = True
+    return 200, hasil
+
+
+# --------------------------------------------------------------------------
 def dalam_root(p: pathlib.Path) -> bool:
     """Halang path traversal — hadkan capaian kepada folder projek."""
     try:
@@ -208,6 +488,13 @@ class Handler(BaseHTTPRequestHandler):
                 "fail": [{"nama": f, "guna": guna.get(f)} for f in fail],
             })
 
+        if laluan == "/api/mentah":
+            try:
+                tahun, bulan = (int(x) for x in q["bulan"][0].split("-"))
+            except (KeyError, ValueError):
+                return self._json({"ralat": "bulan (YYYY-MM) diperlukan"}, 400)
+            return self._json(borang_mentah(tahun, bulan))
+
         if laluan == "/api/tarikh":
             g = date.fromisoformat(q["tarikh"][0])
             return self._json({"masihi": K.masihi_teks(g),
@@ -251,6 +538,12 @@ class Handler(BaseHTTPRequestHandler):
             return self._simpan_penceramah()
         if laluan == "/api/jadual":
             return self._simpan_jadual()
+        if laluan == "/api/mentah":
+            kod, hasil = proses_mentah(self._badan_json())
+            return self._json(hasil, kod)
+        if laluan == "/api/penceramah-baru":
+            kod, hasil = daftar_penceramah(self._badan_json())
+            return self._json(hasil, kod)
         if laluan == "/api/template":
             return self._templat_pratonton()
         if laluan == "/api/render-manual":

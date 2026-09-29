@@ -130,11 +130,15 @@ def muat_registry() -> tuple[list[str], set[str], set[str]]:
 # Baca fail mentah
 # --------------------------------------------------------------------------
 def baca_mentah(path: pathlib.Path) -> tuple[dict[int, dict], list[tuple[int, str, str]]]:
+    return baca_mentah_teks(path.read_text(encoding="utf-8"))
+
+
+def baca_mentah_teks(teks: str) -> tuple[dict[int, dict], list[tuple[int, str, str]]]:
     jadual: dict[int, dict] = {}
     muslimat: list[tuple[int, str, str]] = []
     bahagian = "jadual"
 
-    for no, baris in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+    for no, baris in enumerate(teks.splitlines(), 1):
         baris = baris.strip()
         if not baris or baris.startswith("#!") or baris.startswith("//"):
             continue
@@ -152,10 +156,12 @@ def baca_mentah(path: pathlib.Path) -> tuple[dict[int, dict], list[tuple[int, st
             muslimat.append((int(bhg[0]), bhg[1], bhg[2]))
             continue
 
-        m = re.match(r"^(\d{1,2})\s+(.*)$", baris)
+        m = re.match(r"^(\d{1,2})(?:\s+(.*))?$", baris)
         if not m:
             raise SystemExit(f"Baris {no}: tidak faham -> {baris!r}")
-        hari, isi = int(m.group(1)), m.group(2).strip()
+        hari, isi = int(m.group(1)), (m.group(2) or "").strip()
+        if not isi:
+            continue  # nombor hari sahaja — ikut corak lalai hari itu
 
         if isi.lower().startswith("#yasin"):
             jadual[hari] = {"event": TEKS_YASIN}
@@ -277,17 +283,26 @@ def jadi_teks(doc: dict) -> str:
 # --------------------------------------------------------------------------
 # Laporan
 # --------------------------------------------------------------------------
+def semakan(doc: dict, laporan: list[dict], ustaz: set[str]) -> dict:
+    """Kumpul semua isu dalam bentuk data — dikongsi CLI dan dashboard."""
+    return {
+        "auto": [r for r in laporan if r["tahap"] == "auto"],
+        "sahkan": [r for r in laporan if r["tahap"] == "sahkan"],
+        "tiada": [r for r in laporan if r["tahap"] == "tiada"],
+        "hilang": sorted({v.get(s) for v in doc["jadual"].values()
+                          for s in ("subuh", "maghrib") if v.get(s)} - ustaz),
+        "separa": [k for k, v in doc["jadual"].items()
+                   if "event" not in v and any(v.values()) and not all(v.values())],
+        "kosong": [k for k, v in doc["jadual"].items()
+                   if "event" not in v and not any(v.values())],
+    }
+
+
 def cetak_laporan(doc: dict, laporan: list[dict], ustaz: set[str]) -> int:
     perlu = 0
-
-    kosong = [k for k, v in doc["jadual"].items()
-              if "event" not in v and not any(v.values())]
-    separa = [k for k, v in doc["jadual"].items()
-              if "event" not in v and any(v.values()) and not all(v.values())]
-
-    auto = [r for r in laporan if r["tahap"] == "auto"]
-    sahkan = [r for r in laporan if r["tahap"] == "sahkan"]
-    tiada = [r for r in laporan if r["tahap"] == "tiada"]
+    s = semakan(doc, laporan, ustaz)
+    auto, sahkan, tiada = s["auto"], s["sahkan"], s["tiada"]
+    hilang, separa, kosong = s["hilang"], s["separa"], s["kosong"]
 
     if auto:
         print("\n  Ejaan diseragamkan sendiri:")
@@ -307,8 +322,6 @@ def cetak_laporan(doc: dict, laporan: list[dict], ustaz: set[str]) -> int:
         for r in tiada:
             print(f"    {r['hari']:>2} {r['slot']:<8} {r['mentah']}")
 
-    hilang = sorted({v.get(s) for v in doc["jadual"].values() for s in ("subuh", "maghrib")
-                     if v.get(s)} - ustaz)
     if hilang:
         perlu += len(hilang)
         print("\n  [!] ADA DALAM penceramah-master TAPI TIADA DALAM ustaz-master")

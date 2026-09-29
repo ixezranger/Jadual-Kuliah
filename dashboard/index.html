@@ -220,6 +220,107 @@
   </div>
 </div>
 
+<!-- Isi jadual daripada imej AJK -> data/<tahun>/<MM>-<bulan>.json -->
+<div id="lapis-mentah" class="lapis" hidden>
+  <div class="pilih lebar" role="dialog" aria-modal="true" aria-labelledby="mentah-tajuk">
+    <div class="pilih-head row-between">
+      <div>
+        <h3 id="mentah-tajuk">Isi jadual</h3>
+        <p class="sub">Salin nama daripada imej AJK. Ejaan tak perlu tepat —
+          sistem padankan dengan registry penceramah secara automatik.</p>
+      </div>
+      <span class="chip" id="mentah-asal"></span>
+    </div>
+
+    <div class="mentah-body">
+      <div class="mentah-imej">
+        <div class="mentah-tab" id="mentah-tab"></div>
+        <div class="mentah-kanvas" id="mentah-kanvas" title="Klik untuk zum">
+          <img id="mentah-img" alt="Imej kalendar daripada AJK">
+          <p class="muted" id="mentah-tiada-imej" hidden>
+            Tiada imej dimuat naik untuk bulan ini. Anda masih boleh isi borang secara manual.</p>
+        </div>
+        <p class="hint">Klik imej untuk zum · <a href="#" id="mentah-penuh" target="_blank">buka saiz penuh</a></p>
+      </div>
+
+      <div class="mentah-borang">
+        <table class="tbl mentah-tbl">
+          <thead><tr>
+            <th>Tarikh</th><th>Jenis</th><th>Subuh</th><th>Maghrib</th>
+          </tr></thead>
+          <tbody id="mentah-hari"></tbody>
+        </table>
+
+        <div class="mentah-mus">
+          <div class="row-between">
+            <h4>Kuliah Muslimat</h4>
+            <button type="button" class="btn btn-ghost btn-sm" id="mentah-tambah-mus">+ Tambah baris</button>
+          </div>
+          <table class="tbl mentah-tbl">
+            <thead><tr><th>Tarikh</th><th>Jam</th><th>Ustazah</th><th></th></tr></thead>
+            <tbody id="mentah-mus"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="pilih-foot">
+      <div class="mentah-ringkas" id="mentah-ringkas"></div>
+      <span class="row-gap">
+        <button class="btn btn-ghost btn-sm" id="mentah-batal">Batal</button>
+        <button class="btn btn-sm" id="mentah-jana">Jana fail JSON</button>
+      </span>
+    </div>
+  </div>
+</div>
+<!-- Daftar penceramah baharu (dibuka dari borang Isi jadual) -->
+<div id="lapis-daftar" class="lapis lapis-atas" hidden>
+  <div class="pilih sempit" role="dialog" aria-modal="true" aria-labelledby="daftar-tajuk">
+    <div class="pilih-head">
+      <h3 id="daftar-tajuk">Daftar penceramah baharu</h3>
+      <p class="sub">Didaftarkan dalam registry penceramah <em>dan</em> ustaz-master,
+        supaya boleh digunakan untuk jadual bulanan dan poster individu.</p>
+    </div>
+    <div class="pilih-body">
+      <form id="borang-daftar" class="grid-form">
+        <p class="hint span2">Nama dalam imej AJK: <strong id="daftar-mentah">—</strong></p>
+        <label class="span2">Nama standard (rekod)
+          <input id="daftar-kanon" required autocomplete="off" placeholder="USTAZ NAMA PENUH">
+          <span class="hint">Huruf besar, bermula dengan <code>USTAZ</code> — ikut format rekod sedia ada.</span>
+        </label>
+        <label class="span2">Nama pada poster (tanpa gelaran)
+          <input id="daftar-poster" required autocomplete="off" placeholder="Ustaz Nama Penuh">
+        </label>
+        <label>Gelaran
+          <input id="daftar-gelaran" value="YBhg Al-Fadhil">
+        </label>
+        <label>Tajuk / kitab lalai
+          <input id="daftar-tajuk-kitab" placeholder="cth: Kitab Hadis 40">
+        </label>
+        <label class="span2">Gambar jadual bulanan (assets/ustaz/)
+          <input id="daftar-gambar" list="dl-gambar-bulanan" autocomplete="off" required>
+          <span class="hint" id="daftar-gambar-hint"></span>
+        </label>
+        <label class="span2">Gambar poster individu (berbingkai)
+          <select id="daftar-tile"></select>
+          <span class="hint">Boleh ditetapkan kemudian dalam tab Penceramah.</span>
+        </label>
+        <p class="padan stop span2" id="daftar-ralat"></p>
+      </form>
+    </div>
+    <div class="pilih-foot">
+      <span></span>
+      <span class="row-gap">
+        <button class="btn btn-ghost btn-sm" id="daftar-batal" type="button">Batal</button>
+        <button class="btn btn-sm" id="daftar-simpan" type="button">Daftar &amp; guna</button>
+      </span>
+    </div>
+  </div>
+</div>
+<datalist id="dl-gambar-bulanan"></datalist>
+<datalist id="dl-penceramah"></datalist>
+<datalist id="dl-ustazah"></datalist>
+
 <div id="toast" class="toast" hidden></div>
 
 <script src="/dashboard/app.js"></script>

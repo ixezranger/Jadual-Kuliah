@@ -72,9 +72,21 @@ if errorlevel 1 (
   echo   [!] Pakej belum lengkap. Memasang sekarang...
   echo.
   %PY% -m pip install --quiet playwright pillow
-  %PY% -m playwright install chromium
   echo.
 )
+
+REM --- Pastikan pelayar Chromium (untuk render poster) ada ---
+REM  Tanpa ini render gagal dengan "Executable doesn't exist" (cth. selepas
+REM  tukar laptop atau selepas Playwright dikemas kini). Jika sudah ada,
+REM  arahan ini selesai dalam beberapa saat tanpa memuat turun apa-apa.
+echo   Menyemak pelayar Chromium untuk render poster...
+%PY% -m playwright install chromium
+if errorlevel 1 (
+  echo   [!] Gagal memasang Chromium. Semak sambungan internet dan cuba lagi.
+) else (
+  echo   [OK] Chromium sedia.
+)
+echo.
 
 echo   Memulakan pelayan... pelayar akan buka sendiri.
 echo   Tekan Ctrl+C atau tutup tetingkap ini untuk berhenti.

@@ -41,13 +41,40 @@ HADIS_RIWAYAT_DEFAULT = "(Hadis Riwayat Muslim)"
 # --------------------------------------------------------------------------
 # Kalendar Hijri
 # --------------------------------------------------------------------------
+def _takwim_jakim() -> tuple[list[tuple[date, int, int]], list[tuple[date, date]]]:
+    """data/hijri-jakim.json -> ([(tarikh_mula, tahunH, bulanH)], [(dari, hingga)])."""
+    p = ROOT / "data" / "hijri-jakim.json"
+    if not p.exists():
+        return [], []
+    doc = json.loads(p.read_text(encoding="utf-8"))
+    mula = sorted((date.fromisoformat(v), int(k[:4]), int(k[5:]))
+                  for k, v in doc.get("mula_bulan", {}).items())
+    julat = [(date.fromisoformat(a), date.fromisoformat(b))
+             for a, b in doc.get("julat", {}).values()]
+    return mula, julat
+
+
 def gregorian_to_hijri(g: date) -> tuple[int, int, int]:
     """Tukar tarikh Masihi -> (tahun, bulan, hari) Hijri.
 
-    Guna algoritma jadual (Kuwaiti). Disahkan tepat terhadap poster
-    07-Julai-2026 sedia ada: 1 Julai 2026 = 15 Muharram 1448H,
-    17 Julai 2026 = 1 Safar 1448H, 31 Julai 2026 = 15 Safar 1448H.
+    Utamakan takwim rasmi JAKIM (data/hijri-jakim.json, dikemas kini oleh
+    scripts/kemas_hijri.py). Di luar julat takwim itu, guna kiraan aritmetik
+    yang mungkin tersasar sehari.
     """
+    mula, julat = _takwim_jakim()
+    if any(a <= g <= b for a, b in julat):
+        for tarikh, hy, hm in reversed(mula):
+            if tarikh <= g:
+                return hy, hm, (g - tarikh).days + 1
+    return hijri_aritmetik(g)
+
+
+def dalam_takwim_jakim(g: date) -> bool:
+    return any(a <= g <= b for a, b in _takwim_jakim()[1])
+
+
+def hijri_aritmetik(g: date) -> tuple[int, int, int]:
+    """Algoritma jadual (Kuwaiti) — sandaran bila takwim JAKIM tiada."""
     y, m, d = g.year, g.month, g.day
     if m < 3:
         y -= 1

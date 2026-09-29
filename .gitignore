@@ -8,6 +8,9 @@ __pycache__/
 # Claude Code local settings (per-laptop)
 .claude/settings.local.json
 
+# Backup data lama bila jadual dijana semula dari dashboard
+*.json.bak
+
 # Temporary preview / check files
 _preview/
 _grid_check.png

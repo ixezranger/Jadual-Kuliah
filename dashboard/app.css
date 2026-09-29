@@ -229,6 +229,72 @@ pre#log-teks{
   display:flex;justify-content:space-between;gap:12px;align-items:center;
 }
 
+/* ---- isi jadual daripada imej AJK ---- */
+.pilih.lebar{width:min(1340px,100%);max-height:94vh;height:94vh}
+.mentah-body{
+  flex:1;min-height:0;display:grid;gap:18px;padding:16px 22px;
+  grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
+}
+.mentah-imej{display:flex;flex-direction:column;gap:8px;min-height:0}
+.mentah-tab{display:flex;gap:6px;flex-wrap:wrap}
+.mentah-tab:empty{display:none}
+.mentah-tab button{
+  font:inherit;font-size:12px;border:1px solid var(--line);background:#fff;color:var(--ink-2);
+  padding:3px 10px;border-radius:20px;cursor:pointer;max-width:260px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.mentah-tab button.is-on{border-color:var(--teal);color:var(--teal);background:#f2fafb;font-weight:600}
+.mentah-kanvas{
+  flex:1;min-height:0;overflow:auto;border:1px solid var(--line);border-radius:10px;
+  background:#0d2b33;display:grid;place-items:center;cursor:zoom-in;
+}
+.mentah-kanvas img{max-width:100%;max-height:100%;display:block}
+.mentah-kanvas.zum{place-items:start;cursor:zoom-out}
+.mentah-kanvas.zum img{max-width:none;max-height:none;width:200%}
+.mentah-kanvas .muted{color:#9fc2c8;padding:24px;text-align:center}
+
+.mentah-borang{overflow:auto;min-height:0;padding-right:4px}
+.mentah-tbl{margin-top:0}
+.mentah-tbl th{position:sticky;top:0;background:var(--panel);z-index:1}
+.mentah-tbl td{padding:5px 6px;vertical-align:top}
+.mentah-tbl input,.mentah-tbl select{
+  width:100%;min-width:0;padding:6px 8px;font-size:13px;border-radius:7px;
+}
+.mentah-tbl select{width:auto}
+.mentah-tbl td.tkh{white-space:nowrap;font-variant-numeric:tabular-nums;padding-top:10px}
+.mentah-tbl td.tkh small{display:block;font-size:11px;color:var(--ink-2)}
+.mentah-tbl tr.ahad td{background:#f4fafb}
+.mentah-tbl tr.ahad td.tkh small{color:var(--teal);font-weight:600}
+.mentah-tbl .ev{font-size:12.5px;color:var(--ink-2);padding-top:10px}
+.padan{display:block;font-size:11px;line-height:1.3;margin-top:3px;min-height:0}
+.padan:empty{display:none}
+.padan.ok{color:var(--ok)}
+.padan.warn{color:var(--warn)}
+.padan.stop{color:var(--stop)}
+.mentah-mus{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+.mentah-mus h4{font-size:14px}
+.mentah-mus td:first-child{width:74px}
+.mentah-mus td:nth-child(2){width:130px}
+.lapis-atas{z-index:70}
+.pilih.sempit{width:min(620px,100%)}
+.grid-form label .hint{font-weight:400}
+.padan .btn-pautan{
+  font:inherit;font-size:11px;font-weight:600;background:none;border:0;padding:0 0 0 6px;
+  color:var(--teal);cursor:pointer;text-decoration:underline;
+}
+.padan .btn-pautan:hover{color:var(--teal-2)}
+.padan span.warn{color:var(--warn)}
+.mentah-ringkas{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.btn-x{background:none;border:0;color:var(--ink-2);cursor:pointer;font-size:16px;padding:6px}
+.btn-x:hover{color:var(--stop)}
+.step .act .btn-utama{flex:1 1 100%}
+
+@media (max-width:980px){
+  .pilih.lebar{height:auto}
+  .mentah-body{grid-template-columns:1fr;overflow:auto}
+  .mentah-kanvas{height:50vh;flex:none}
+}
+
 /* butang kanan kekal di kanan walaupun "Kosongkan slot" disembunyikan */
 .pilih-foot .row-gap{margin-left:auto;display:flex;gap:8px}
 .pilih-body .grid-form{margin:0}
