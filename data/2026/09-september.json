@@ -1,0 +1,46 @@
+{
+  "bulan": "SEPTEMBER",
+  "tahun": "2026",
+  "mula_hari": 1,
+  "_nota_mula_hari": "1 September jatuh hari apa? Isnin=0, Selasa=1, Rabu=2, Khamis=3, Jumaat=4, Sabtu=5, Ahad=6. 1 September 2026 = Selasa = 1.",
+  "hari_dalam_bulan": 30,
+
+  "jadual": {
+    "1":  { "maghrib": "USTAZ IZMIR FAREEZ" },
+    "2":  { "maghrib": "USTAZ AMIN QUSYAIRI" },
+    "3":  { "event": "Bacaan\nYasin & Tahlil\nImam Bertugas" },
+    "4":  { "maghrib": "USTAZ ADAM AZHARI" },
+    "5":  { "maghrib": "USTAZ FIRDAUS HJ MAHADI" },
+    "6":  { "subuh": "USTAZ SYUHUD RAZALI", "maghrib": "USTAZ ANAS MALEK" },
+    "7":  { "maghrib": "USTAZ ROZAIMAN ISMAIL" },
+    "8":  { "maghrib": "USTAZ WAN MARZUKI MAD JUNOH" },
+    "9":  { "maghrib": "USTAZ RAHIMI MD SAAD" },
+    "10": { "event": "Bacaan\nYasin & Tahlil\nImam Bertugas" },
+    "11": { "maghrib": "USTAZ AHMAD HISYAM" },
+    "12": { "maghrib": "USTAZ SAAD HARMAN SHAH RANIRI" },
+    "13": { "subuh": "USTAZ HISYAM ZAKARIA", "maghrib": "USTAZ LUTFI ISMAIL" },
+    "14": { "maghrib": "USTAZ DR. ZUHAILI" },
+    "15": { "maghrib": "USTAZ DR. HJ. ZAINAL ABIDIN KASMIN" },
+    "16": { "maghrib": "USTAZ ABD JALIL HANAFEE" },
+    "17": { "event": "Bacaan\nYasin & Tahlil\nImam Bertugas" },
+    "18": { "maghrib": "USTAZ NAJMUL KHAIRY" },
+    "19": { "maghrib": "USTAZ ZULKIFLI BIN MOHD NOR" },
+    "20": { "subuh": "USTAZ HAKIMIN HAFIZ", "maghrib": "USTAZ ABDULLAH IBRAHIM" },
+    "21": { "maghrib": "USTAZ LT KOL HJ MOHD NAIM HJ AHMAD" },
+    "22": { "maghrib": "USTAZ DR. AZHAR MOHD" },
+    "23": { "maghrib": "USTAZ MEEFTAH ANUAR" },
+    "24": { "event": "Bacaan\nYasin & Tahlil\nImam Bertugas" },
+    "25": { "maghrib": "USTAZ HISYAM ZAKARIA" },
+    "26": { "maghrib": "USTAZ MALIK HAFIFI" },
+    "27": { "subuh": "USTAZ NOR AHMAD HASBULLAH", "maghrib": "IMAM HADI" },
+    "28": { "maghrib": "USTAZ EHSAN MOHD DAUD" },
+    "29": { "maghrib": "USTAZ YASSIR SALLEH" },
+    "30": { "maghrib": "USTAZ AZAHARI MUSA" }
+  },
+
+  "muslimah": [
+    { "tarikh": "6 SEPTEMBER (AHAD)", "jam": "9:00 PAGI", "nama": "USTAZAH ADIBAH" },
+    { "tarikh": "12 SEPTEMBER (SABTU)", "jam": "10:00 PAGI", "nama": "USTAZAH NORHAFIZAH" },
+    { "tarikh": "27 SEPTEMBER (AHAD)", "jam": "2:30 PTG", "nama": "USTAZAH FADILAH" }
+  ]
+}

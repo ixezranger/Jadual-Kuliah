@@ -1,0 +1,48 @@
+// Ditaip terus daripada imej kalendar AJK:
+//   WhatsApp Image 2026-08-26 at 10.42.05.jpeg
+// Ejaan di bawah dibiarkan SAMA seperti dalam imej.
+// buat_bulan.py yang padankan dengan ejaan standard dalam registry.
+//
+// Format:  <hari>  <nama maghrib>
+//          <hari>  <nama subuh> | <nama maghrib>
+//          <hari>  #yasin
+//          <hari>  #event <teks>
+
+1   UST.IZMIR FAREEZ
+2   UST.AMIN QUSHAIRI
+3   #yasin
+4   UST.ADAM AZHARI
+5   UST FIRDAUS MAHADI
+6   UST SYUHUD RAZALI | UST.ANAS MALIK
+7   UST.ROZAIMAN ISMAIL
+8   UST WAN MOHD MARZUKI
+9   UST.RAHIMI MD.SAAD
+10  #yasin
+11  UST.AHMAD HISYAM
+12  UST SAAD HARMAN SHAH RANIRI
+13  UST.HISYAM ZAKARIA | UST.LUTFFI
+14  UST.DR.ZUHAILI
+15  UST.DR.HJ.ZAINAL ABIDIN KUSMIN
+16  UST.ABD JALIL HANAFEE
+17  #yasin
+18  UST.NAJMUL KHAIRY
+19  UST.ZULKIFLI BIN MOHD NOR 
+20  UST.HAKIMIN HAFIZ | UST.ABDULLAH IBRAHIM
+21  LT.KOL UST NAIM HJ AHMAD
+22  UST.DR.AZHAR MUHAMAD
+23  UST.MEEFTAH ANUAR
+24  #yasin
+25  UST.HISYAM ZAKARIA
+26  UST.MALIK AFIFI
+27  UST.NOR AHMAD HASBULLAH | IMAM HADI
+28  UST.MOHD IHSAN MOHD DAUD
+29  UST YASIR SALLEH
+30  UST.AZHARI MUSA
+
+[muslimat]
+// Imej tertulis "OGOS" pada ketiga-tiga baris ini, tetapi nama harinya
+// (Ahad/Sabtu/Ahad) padan dengan tarikh SEPTEMBER, bukan Ogos.
+// Diambil sebagai tersalah taip pada poster AJK.
+6  | 9:00 PAGI  | USTAZAH ADIBAH
+12 | 10:00 PAGI | USTAZAH NORHAFIZAH
+27 | 2:30 PTG   | USTAZAH FADILAH

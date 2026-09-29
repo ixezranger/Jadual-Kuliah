@@ -9,8 +9,11 @@ Output masuk output/<tahun>/<bulan>.png dan .pdf
 Skrip GAGAL (exit 1) kalau ada nama ustaz yang tak wujud dalam
 data/ustaz-master.json — supaya silap ejaan tak lepas senyap.
 """
-import json, sys, pathlib, base64, mimetypes
+import json, sys, os, pathlib, base64, mimetypes
 from playwright.sync_api import sync_playwright
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -27,6 +30,20 @@ def data_uri(rel_path):
     b64 = base64.b64encode(p.read_bytes()).decode()
     return f"data:{mime};base64,{b64}"
 
+def font_data_uri(filename="HelveticaNeueLTCom-BdCn.ttf"):
+    """Cari font 77 Bold Condensed dalam font-font Windows (per-user atau sistem).
+    Tak disimpan dalam repo sebab font berlesen komersial."""
+    candidates = []
+    local_appdata = os.environ.get("LOCALAPPDATA")
+    if local_appdata:
+        candidates.append(pathlib.Path(local_appdata) / "Microsoft/Windows/Fonts" / filename)
+    candidates.append(pathlib.Path("C:/Windows/Fonts") / filename)
+    for c in candidates:
+        if c.exists():
+            b64 = base64.b64encode(c.read_bytes()).decode()
+            return f"data:font/ttf;base64,{b64}"
+    return None
+
 def main():
     if len(sys.argv) < 2:
         die("Bagi path fail data. Contoh: python scripts/render.py data/2026/08-ogos.json")
@@ -38,6 +55,8 @@ def main():
     data = json.loads(data_path.read_text(encoding="utf-8"))
     master = json.loads((ROOT / "data/ustaz-master.json").read_text(encoding="utf-8"))
     master = {k: v for k, v in master.items() if not k.startswith("_")}
+    master_ustazah = json.loads((ROOT / "data/ustazah-master.json").read_text(encoding="utf-8"))
+    master_ustazah = {k: v for k, v in master_ustazah.items() if not k.startswith("_")}
 
     # ---- SEMAKAN NAMA (automatik) ----
     unknown, missing_photos = [], []
@@ -50,7 +69,13 @@ def main():
                 unknown.append((hari, slot, nama))
             else:
                 if not (ROOT / "assets/ustaz" / master[nama]).exists():
-                    missing_photos.append((nama, master[nama]))
+                    missing_photos.append((nama, f"assets/ustaz/{master[nama]}"))
+
+    for m in data.get("muslimah", []):
+        nama = m.get("nama")
+        f = master_ustazah.get(nama)
+        if not f or not (ROOT / "assets/ustazah" / f).exists():
+            missing_photos.append((nama, f"assets/ustazah/{f}" if f else "(tiada dalam ustazah-master.json)"))
 
     if unknown:
         print("::group::RALAT — nama tak dalam ustaz-master.json")
@@ -63,13 +88,12 @@ def main():
         # amaran je, bukan gagal — placeholder FOTO akan muncul
         print("::warning::Gambar tak jumpa (guna placeholder):")
         for nama, f in missing_photos:
-            print(f"  {nama} -> assets/ustaz/{f}")
+            print(f"  {nama} -> {f}")
 
-    # ---- aset header (optional) ----
+    # ---- aset (font header bulan/tahun; header/footer/title dah baked-in base-design) ----
     assets = {
-        "logo": data_uri("assets/logo-masjid.png"),
-        "khat": data_uri("assets/khat-header.png"),
-        "qr":   data_uri("assets/qr-infaq.png"),
+        "font": font_data_uri(),
+        "fontLight": font_data_uri("HelveticaNeueLTCom-Lt.ttf"),
     }
 
     template = (ROOT / "template/jadual.html").read_text(encoding="utf-8")
@@ -77,6 +101,7 @@ def main():
         "<script>"
         f"window.__DATA__={json.dumps(data, ensure_ascii=False)};"
         f"window.__MASTER__={json.dumps(master, ensure_ascii=False)};"
+        f"window.__MASTER_USTAZAH__={json.dumps(master_ustazah, ensure_ascii=False)};"
         f"window.__ASSETS__={json.dumps(assets)};"
         "</script>"
     )
@@ -94,10 +119,11 @@ def main():
 
     with sync_playwright() as p:
         b = p.chromium.launch()
-        pg = b.new_page(viewport={"width":1123,"height":794}, device_scale_factor=2)
+        pg = b.new_page(viewport={"width":3000,"height":2025})
         pg.goto("file://" + str(tmp.resolve()))
-        pg.wait_for_timeout(600)
-        pg.pdf(path=str(pdf_path), width="1123px", height="794px", print_background=True)
+        pg.evaluate("document.fonts.ready")
+        pg.wait_for_timeout(300)
+        pg.pdf(path=str(pdf_path), width="3000px", height="2025px", print_background=True)
         pg.screenshot(path=str(png_path), full_page=True)
         b.close()
 

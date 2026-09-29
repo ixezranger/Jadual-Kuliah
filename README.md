@@ -4,6 +4,14 @@ Repo ni simpan semua aset jadual kuliah dan render PNG + PDF **automatik**
 dalam GitHub sendiri (guna GitHub Actions). Tak perlu Photoshop, tak perlu
 render manual di komputer.
 
+> **Poster Kuliah Individu** (satu poster per slot Subuh/Maghrib) ada sistem
+> sendiri dengan papan kawalan.
+>
+> - Cara guna, langkah demi langkah → [docs/PANDUAN-MULA.md](docs/PANDUAN-MULA.md)
+> - Butiran teknikal → [docs/KULIAH-INDIVIDU.md](docs/KULIAH-INDIVIDU.md)
+>
+> Untuk mula: klik dua kali **`MULA-DASHBOARD.bat`**.
+
 ---
 
 ## Susunan folder

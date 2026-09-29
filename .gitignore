@@ -1,0 +1,13 @@
+# Photoshop working files - kept on this laptop only
+*.psd
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Claude Code local settings (per-laptop)
+.claude/settings.local.json
+
+# Temporary preview / check files
+_preview/
+_grid_check.png

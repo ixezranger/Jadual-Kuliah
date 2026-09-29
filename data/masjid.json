@@ -1,0 +1,33 @@
+{
+  "_nota": "Senarai Masjid/Surau (CMS). Kod = [M|S]NNNN. Tambah entri baharu di sini bila ada permintaan dari masjid/surau lain. 'background' merujuk fail dalam assets/base-design/kuliah-individu/ dengan corak Background-Design-Kuliah-<SLOT>-01-<KOD>.png",
+  "_skema": {
+    "kod": "Kod unik. M=Masjid, S=Surau.",
+    "nama": "Nama penuh untuk paparan dalaman.",
+    "nama_poster": "Teks lokasi yang dicetak pada poster Kuliah Individu.",
+    "aktif": "true = tunjuk dalam senarai pilihan dashboard.",
+    "background": "Nama fail latar mengikut slot kuliah.",
+    "deco": "Hiasan penjuru kiri-bawah, dilukis DI HADAPAN gambar penceramah. 'x' = jarak dari tepi kiri, 'bawah' = jarak dari tepi bawah (piksel, ruang 3000x1689).",
+    "penceramah_master": "Fail registry penceramah untuk masjid ini.",
+    "output_root": "Folder output relatif kepada root projek."
+  },
+  "masjid": [
+    {
+      "kod": "M0001",
+      "nama": "Masjid As-Salam, Petaling Permai",
+      "nama_poster": "Masjid As-Salam, Petaling Permai, Petaling Jaya",
+      "aktif": true,
+      "background": {
+        "subuh": "Background-Design-Kuliah-Subuh-01-M0001.png",
+        "maghrib": "Background-Design-Kuliah-Maghrib-01-M0001.png"
+      },
+      "deco": {
+        "subuh": { "fail": "kerawang-02.png", "x": 0, "bawah": 0 },
+        "maghrib": { "fail": "kerawang-01.png", "x": 0, "bawah": 0 }
+      },
+      "penceramah_master": "data/penceramah-master.json",
+      "ustaz_tile_dir": "assets/ustaz/kuliah-individu-ustaz",
+      "output_root": "output/2026/Jadual Kuliah Individu",
+      "output_bulanan": "output/2026"
+    }
+  ]
+}

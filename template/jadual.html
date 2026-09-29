@@ -4,182 +4,238 @@
 <meta charset="UTF-8">
 <title>Jadual Kuliah Masjid As-Salam</title>
 <style>
-  @page { size: A4 landscape; margin: 0; }
   * { margin:0; padding:0; box-sizing:border-box; }
   :root{
-    --maroon:#8B0000; --maroon-dark:#6B0000; --red:#C0182B;
     --ink:#1a1a1a; --line:#d9d9d9; --soft:#f3f4f6;
-    --green:#0f7b52; --gold:#d4a017; --muslimah:#8e24aa;
+    --green:#0f7b52; --red-odd:#9c1218; --red-even:#ac242a; --bg:#edfbff;
   }
-  body{ font-family:"Segoe UI",Arial,sans-serif; color:var(--ink); width:1123px; margin:0 auto; background:#fff; }
-  .sheet{ width:1123px; min-height:794px; position:relative; }
+  html, body{ background:var(--bg); }
+  body{ font-family:"Segoe UI",Arial,sans-serif; color:var(--ink); }
 
-  .top{ display:flex; align-items:stretch; }
-  .month{ background:var(--red); color:#fff; padding:14px 26px; display:flex; flex-direction:column;
-          justify-content:center; align-items:center; min-width:150px; }
-  .month .m{ font-size:34px; font-weight:800; letter-spacing:1px; line-height:1; }
-  .month .y{ font-size:26px; font-weight:700; margin-top:2px; }
-  .titlebar{ flex:1; padding:12px 24px; display:flex; flex-direction:column; justify-content:center; }
-  .khat{ text-align:center; }
-  .khat img{ max-height:56px; }
-  .khat .fallback{ font-size:30px; color:var(--maroon); font-weight:700; }
-  .en{ text-align:right; margin-top:4px; }
-  .en h1{ color:var(--green); font-size:20px; font-weight:800; }
-  .en p{ font-size:13px; font-weight:600; color:#333; }
-  .badge{ width:82px; height:82px; margin:8px 16px; align-self:center; display:flex;
-          align-items:center; justify-content:center; }
-  .badge img{ max-width:100%; max-height:100%; }
-  .badge .fallback{ color:var(--gold); font-size:11px; font-weight:700; text-align:center;
-          border:3px solid var(--green); border-radius:50%; width:82px; height:82px;
-          display:flex; align-items:center; justify-content:center; line-height:1.1; }
+  .sheet{ width:3000px; height:2025px; position:relative; background:var(--bg); overflow:hidden; }
 
-  table{ width:100%; border-collapse:collapse; table-layout:fixed; }
-  th{ background:var(--maroon); color:#fff; font-size:13px; font-weight:700; padding:8px 4px;
-      border:1px solid var(--maroon-dark); letter-spacing:.5px; }
-  td{ border:1px solid var(--line); vertical-align:top; height:118px; padding:0; position:relative; }
-  .cell{ display:flex; flex-direction:column; height:100%; }
-  .datebar{ display:flex; justify-content:space-between; align-items:center; background:#2b2b2b;
-            color:#fff; font-size:11px; padding:2px 6px; }
-  .datebar .num{ font-weight:800; font-size:13px; }
-  .datebar .waktu{ font-size:10px; opacity:.9; }
-  .body{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-         text-align:center; padding:6px 5px; gap:3px; }
-  .foto{ width:52px; height:52px; border-radius:5px; background:var(--soft); display:flex;
-         align-items:center; justify-content:center; font-size:9px; color:#999;
-         border:1px solid #e5e5e5; overflow:hidden; }
-  .foto img{ width:100%; height:100%; object-fit:cover; }
-  .nama{ font-size:11px; font-weight:700; line-height:1.15; }
-  .cell.event .body{ background:#eef6f1; }
-  .cell.event .nama{ color:var(--green); font-style:italic; }
+  /* ---- HEADER (background gambar penuh, cuma bulan/tahun disuntik) ---- */
+  .header{ position:relative; width:3000px; height:305px;
+           background:url('assets/base-design/JK-Header-01.png') no-repeat; background-size:3000px 305px; }
+  .month-box{ position:absolute; left:64px; top:0; width:420px; height:274px;
+              display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .month-box .m{ font-family:'HN77BdCn','Arial Narrow',Arial,sans-serif; font-weight:700;
+                 color:#fff; font-size:140px; line-height:.9; text-transform:uppercase; text-align:center; }
+  .month-box .y{ font-family:'HNLight','Segoe UI Light',Arial,sans-serif; font-weight:300;
+                 color:#fff; font-size:92px; line-height:1; margin-top:8px; }
+
+  /* ---- JADUAL (dipusatkan, lebar terhad seperti design rujukan) ---- */
+  .table-wrap{ width:2610px; margin:0 auto; box-shadow:0 14px 34px rgba(13,43,51,.28),
+                                            0 3px 8px rgba(13,43,51,.16); }
+  table{ width:2610px; border-collapse:collapse; table-layout:fixed; }
+  th{ height:82px; font-size:33px; font-weight:800; color:#fff; letter-spacing:1px;
+      border:1px solid rgba(255,255,255,.25); }
+  th:nth-child(odd){ background:var(--red-odd); }
+  th:nth-child(even){ background:var(--red-even); }
+
+  /* Tinggi baris ditetapkan oleh skrip supaya grid sentiasa memenuhi ruang:
+     2025 (sheet) - 305 (header) - 348 (footer) - 82 (tajuk lajur) = 1290px. */
+  td{ border:1px solid var(--line); height:var(--row-h,215px); padding:0; position:relative;
+      vertical-align:top; background:#fff; }
+  .cell{ position:relative; height:100%; display:flex; flex-direction:column; }
+  .datebar{ height:44px; background:#2b2b2b; color:#fff; display:flex; align-items:center;
+            justify-content:space-between; padding:0 12px; z-index:1; }
+  .datebar .num{ font-weight:800; font-size:29px; }
+  .datebar .waktu{ font-size:25px; font-weight:600; opacity:.85; }
+  .datebar .waktu:only-child{ margin-left:auto; }
+  .body{ position:relative; flex:1; }
+  /* Semua gambar dalam assets/ustaz/ dipotong pada kanvas seragam 180x220,
+     jadi ia dirender pada saiz yang sama — tiada pelarasan per-gambar.
+     Guna scripts/semak_gambar.py untuk mengesan fail yang tersasar. */
+  .foto-lg{ position:absolute; left:0; bottom:0; height:100%; width:auto;
+            display:flex; align-items:flex-end; justify-content:flex-start;
+            font-size:13px; color:#999; overflow:visible; z-index:1; }
+  .foto-lg img{ height:90%; width:auto; display:block; }
+  .txt{ position:absolute; right:0; top:60%; transform:translateY(-50%); width:62%; z-index:3; text-align:right;
+        padding:0 6px; }
+  .nama{ font-size:22px; font-weight:700; line-height:1.2; }
+
+  .cell.event .body{ display:flex; align-items:center; justify-content:center; text-align:center; padding:10px 20px; }
+  .cell.event .nama{ font-size:30px; font-weight:700; color:var(--ink); }
+  /* Acara berbilang baris (Bacaan Yasin & Tahlil): seluruh blok italik,
+     baris terakhir 'Imam Bertugas' tidak ditebalkan. */
+  .cell.event .nama.ev-multi{ font-style:italic; font-weight:400; }
+  .cell.event .nama.ev-multi b{ font-weight:700; }
   .cell.empty{ background:#fafafa; }
-  .cell.ralat .body{ background:#ffebee; }
   .cell.ralat .nama{ color:#c62828; }
-  .ralat-tag{ font-size:8px; color:#c62828; font-weight:700; }
-  .subuh-tag{ background:#1565c0; color:#fff; font-size:8px; font-weight:700; padding:1px 5px;
-              border-radius:3px; margin-bottom:2px; display:inline-block; }
+  .ralat-tag{ font-size:11px; color:#c62828; font-weight:700; display:block; }
+  .subuh-tag{ position:absolute; top:4px; right:6px; z-index:4; background:#1565c0; color:#fff;
+              font-size:19px; font-weight:700; padding:4px 12px; border-radius:5px; }
 
-  .footer{ display:flex; margin-top:2px; }
-  .muslimah{ background:#faf2fb; border-top:3px solid var(--muslimah); flex:1; padding:8px 14px;
-             display:flex; align-items:center; gap:14px; }
-  .muslimah .lbl{ color:var(--muslimah); font-weight:800; font-size:14px; line-height:1.1; white-space:nowrap; }
-  .muslimah .items{ display:flex; gap:18px; flex-wrap:wrap; }
-  .it{ font-size:10px; line-height:1.3; }
-  .it b{ display:block; color:#333; }
-  .infaq{ background:var(--maroon); color:#fff; padding:8px 18px; display:flex; align-items:center;
-          gap:14px; min-width:300px; }
-  .infaq .txt .t{ font-size:13px; font-style:italic; }
-  .infaq .txt .acc{ font-size:19px; font-weight:800; letter-spacing:1px; }
-  .infaq .txt .nm{ font-size:11px; }
-  .infaq .qr{ width:64px; height:64px; background:#fff; padding:3px; border-radius:4px; }
-  .infaq .qr img{ width:100%; height:100%; }
-  .prep{ font-size:9px; color:#777; padding:4px 14px; border-top:1px solid var(--line); }
+  /* ---- FOOTER (background gambar penuh; hanya jalur Kuliah Muslimah disuntik) ---- */
+  .footer{ position:absolute; left:0; bottom:0; width:3000px; height:348px;
+           background:url('assets/base-design/JK-Footer-01.png') no-repeat; background-size:3000px 348px; }
+  .muslimah-row{ position:absolute; left:195px; top:0; height:198px; display:flex; align-items:center; gap:50px; }
+  .muslimah-row .title-img{ height:136px; width:auto; }
+  .muslimah-row .items{ display:flex; gap:44px; }
+  .it{ display:flex; align-items:center; gap:16px; font-size:26px; line-height:1.35; color:#333; }
+  .it b{ display:block; font-size:28px; color:#111; }
+  .it .ustazah-nama{ font-weight:600; }
+  .it .av{ flex-shrink:0; width:148px; height:148px; border-radius:50%; overflow:hidden;
+           background:var(--soft); border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.2);
+           display:flex; align-items:center; justify-content:center; font-size:11px; color:#999; }
+  .it .av img{ width:100%; height:100%; object-fit:cover; }
 </style>
 </head>
 <body>
 <div class="sheet">
-  <div class="top">
-    <div class="month"><div class="m" id="bulan"></div><div class="y" id="tahun"></div></div>
-    <div class="titlebar">
-      <div class="khat" id="khat"></div>
-      <div class="en">
-        <h1>JADUAL KULIAH MASJID AS-SALAM</h1>
-        <p>MASJID AS-SALAM, PETALING UTAMA · PETALING JAYA, SELANGOR</p>
-      </div>
-    </div>
-    <div class="badge" id="logo"></div>
+  <div class="header">
+    <div class="month-box"><div class="m" id="bulan"></div><div class="y" id="tahun"></div></div>
   </div>
 
-  <table>
-    <thead><tr><th>ISNIN</th><th>SELASA</th><th>RABU</th><th>KHAMIS</th><th>JUMAAT</th><th>SABTU</th><th>AHAD</th></tr></thead>
-    <tbody id="grid"></tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <colgroup><col><col><col><col><col><col><col><col></colgroup>
+      <thead><tr><th>ISNIN</th><th>SELASA</th><th>RABU</th><th>KHAMIS</th><th>JUMAAT</th><th>SABTU</th><th colspan="2">AHAD</th></tr></thead>
+      <tbody id="grid"></tbody>
+    </table>
+  </div>
 
   <div class="footer">
-    <div class="muslimah">
-      <div class="lbl">KULIAH<br>MUSLIMAH</div>
+    <div class="muslimah-row">
+      <img class="title-img" src="assets/base-design/Title-Kuliah-Muslimat.png" alt="Kuliah Muslimah">
       <div class="items" id="muslimah"></div>
     </div>
-    <div class="infaq">
-      <div class="txt">
-        <div class="t">Sumbangan Infaq</div>
-        <div class="acc">1204 7010 041973</div>
-        <div class="nm">Masjid As-Salam · Bank Islam</div>
-      </div>
-      <div class="qr" id="qr"></div>
-    </div>
   </div>
-  <div class="prep">Disediakan oleh: Lajnah Dakwah dan Pendidikan Masjid As-Salam</div>
 </div>
 
 <script>
 // Data disuntik oleh render.py sebagai window.__DATA__, window.__MASTER__, window.__ASSETS__
 const D = window.__DATA__;
 const MASTER = window.__MASTER__;
-const A = window.__ASSETS__ || {};   // { logo, khat, qr } path relatif
+const MASTER_USTAZAH = window.__MASTER_USTAZAH__ || {};
+const A = window.__ASSETS__ || {};   // { font } data URI fon 77 Bold Condensed
 
-document.getElementById("bulan").textContent = D.bulan;
+// Kotak bulan hanya 420px lebar — nama penuh seperti "SEPTEMBER" terkeluar.
+// Semua dipendekkan kepada 3 huruf; OGOS dikekalkan 4 huruf.
+const BULAN_PENDEK = {
+  JANUARI:"JAN", FEBRUARI:"FEB", MAC:"MAC", APRIL:"APR",
+  MEI:"MEI", JUN:"JUN", JULAI:"JUL", OGOS:"OGOS",
+  SEPTEMBER:"SEP", OKTOBER:"OKT", NOVEMBER:"NOV", DISEMBER:"DIS",
+};
+const namaBulan = String(D.bulan || "").trim().toUpperCase();
+document.getElementById("bulan").textContent = BULAN_PENDEK[namaBulan] || namaBulan.slice(0, 3);
 document.getElementById("tahun").textContent = D.tahun;
 
-// aset header
-document.getElementById("khat").innerHTML = A.khat
-  ? `<img src="${A.khat}" alt="khat">` : `<span class="fallback">جدول كليه مسجد السلام</span>`;
-document.getElementById("logo").innerHTML = A.logo
-  ? `<img src="${A.logo}" alt="logo">` : `<span class="fallback">AS<br>SALAM</span>`;
-document.getElementById("qr").innerHTML = A.qr ? `<img src="${A.qr}" alt="QR infaq">` : "";
+if (A.font || A.fontLight){
+  const s = document.createElement("style");
+  let css = "";
+  if (A.font) css += `@font-face{font-family:'HN77BdCn';src:url(${A.font}) format('truetype');font-weight:700;}`;
+  if (A.fontLight) css += `@font-face{font-family:'HNLight';src:url(${A.fontLight}) format('truetype');font-weight:300;}`;
+  s.textContent = css;
+  document.head.appendChild(s);
+}
 
 function fotoFor(nama){
-  const file = MASTER[nama];
-  if(!file) return {html:`<div class="foto">FOTO</div>`, ralat:true};
-  return {html:`<div class="foto"><img src="assets/ustaz/${file}" onerror="this.parentNode.textContent='FOTO'"></div>`, ralat:false};
+  const file = nama ? MASTER[nama] : undefined;
+  if(!file) return {html:"", ralat: !!nama};
+  return {html:`<div class="foto-lg"><img src="assets/ustaz/${file}" onerror="this.parentNode.remove()"></div>`, ralat:false};
 }
+
+function avatarForUstazah(nama){
+  const file = MASTER_USTAZAH[nama];
+  if(!file) return `<div class="av">FOTO</div>`;
+  return `<div class="av"><img src="assets/ustazah/${file}" onerror="this.parentNode.textContent='FOTO'"></div>`;
+}
+
+// Nama-nama ni foto dia lebar, jadi pisahkan ke beberapa baris supaya nama tak overlap gambar.
+const NAMA_BREAK_CUSTOM = new Map([
+  ["USTAZ ADAM AZHARI", "USTAZ<br>ADAM AZHARI"],
+  ["USTAZ WAN MARZUKI MAD JUNOH", "USTAZ<br>WAN MARZUKI<br>MAD JUNOH"],
+  ["USTAZ DR. HJ. ZAINAL ABIDIN KASMIN", "USTAZ<br>DR. HJ. ZAINAL ABIDIN KASMIN"]
+]);
 
 function personBlock(nama){
   const f = fotoFor(nama);
   const tag = f.ralat ? `<span class="ralat-tag">⚠ NAMA TAK DALAM MASTER</span>` : "";
-  return { html:`${f.html}<div class="nama">${nama}</div>${tag}`, ralat:f.ralat };
+  const display = NAMA_BREAK_CUSTOM.get(nama) || nama;
+  return { foto:f.html, namaHtml:`<div class="nama">${display}${tag}</div>`, ralat:f.ralat };
 }
 
-function cell(d){
-  if(!d) return `<td class="empty"></td>`;
-  const info = D.jadual[String(d)];
-  if(!info) return `<td><div class="cell"><div class="datebar"><span class="num">${d}</span></div><div class="body"></div></div></td>`;
+// Kotak biasa (Isnin-Sabtu): satu <td>, lebar satu lajur.
+function dayCellInner(d, info, colspan){
+  const cs = colspan ? ` colspan="${colspan}"` : "";
+  if(!d) return `<td class="empty"${cs}></td>`;
+  if(!info) return `<td${cs}><div class="cell"><div class="datebar"><span class="num">${d}</span></div><div class="body"></div></div></td>`;
 
   if(info.event){
-    return `<td><div class="cell event">
+    // Setiap baris dalam data jadi satu baris pada poster. Bila ada lebih
+    // daripada satu baris, baris terakhir dianggap keterangan — tidak ditebalkan.
+    const baris = String(info.event).split("\n");
+    const banyak = baris.length > 1;
+    const teks = banyak
+      ? baris.map((b,i) => i < baris.length-1 ? `<b>${b}</b>` : b).join("<br>")
+      : baris[0];
+    return `<td${cs}><div class="cell event">
       <div class="datebar"><span class="num">${d}</span><span class="waktu">Maghrib</span></div>
-      <div class="body"><div class="nama">${info.event}</div></div></div></td>`;
-  }
-
-  if(info.subuh){
-    const s = personBlock(info.subuh), m = personBlock(info.maghrib||"");
-    return `<td><div class="cell" style="flex-direction:row">
-      <div style="flex:1;display:flex;flex-direction:column;border-right:1px solid #eee">
-        <div class="datebar"><span class="num">${d}</span><span class="waktu">Subuh</span></div>
-        <div class="body ${s.ralat?'':''}"><span class="subuh-tag">KULIAH SUBUH</span>${s.html}</div></div>
-      <div style="flex:1;display:flex;flex-direction:column">
-        <div class="datebar"><span class="waktu">Maghrib</span></div>
-        <div class="body">${m.html}</div></div></div></td>`;
+      <div class="body"><div class="nama${banyak ? ' ev-multi' : ''}">${teks}</div></div></div></td>`;
   }
 
   const p = personBlock(info.maghrib||"");
-  return `<td><div class="cell ${p.ralat?'ralat':''}">
+  return `<td${cs}><div class="cell ${p.ralat?'ralat':''}">
     <div class="datebar"><span class="num">${d}</span><span class="waktu">Maghrib</span></div>
-    <div class="body">${p.html}</div></div></td>`;
+    <div class="body">${p.foto}<div class="txt">${p.namaHtml}</div></div></div></td>`;
 }
 
-let html="", day=1, started=false;
-for(let w=0; w<6 && day<=D.hari_dalam_bulan; w++){
+function cell(d){
+  const info = d ? D.jadual[String(d)] : null;
+  return dayCellInner(d, info, null);
+}
+
+// Ahad: dua <td> berasingan (Subuh | Maghrib), setiap satu SAMA saiz dengan hari lain.
+// Kalau tiada Kuliah Subuh pada Ahad tu, guna satu <td colspan="2"> supaya lebar jadual kekal.
+function cellAhad(d){
+  if(!d) return `<td class="empty" colspan="2"></td>`;
+  const info = D.jadual[String(d)];
+  if(info && ('subuh' in info)){
+    const s = personBlock(info.subuh||""), m = personBlock(info.maghrib||"");
+    return `<td><div class="cell">
+        <div class="datebar"><span class="num">${d}</span><span class="waktu">Subuh</span></div>
+        <div class="body">${s.foto}<span class="subuh-tag">KULIAH SUBUH</span><div class="txt">${s.namaHtml}</div></div></div></td>
+      <td><div class="cell">
+        <div class="datebar"><span class="waktu">Maghrib</span></div>
+        <div class="body">${m.foto}<div class="txt">${m.namaHtml}</div></div></div></td>`;
+  }
+  return dayCellInner(d, info, 2);
+}
+
+// Grid 5 baris (35 petak). Bulan yang melimpah ke baris ke-6 dibalut ke
+// petak kosong di HADAPAN baris pertama — petak itu jatuh pada lajur hari
+// yang betul kerana 35 ialah gandaan 7. Ruang baris ke-6 yang hampir kosong
+// dijimatkan sepenuhnya.
+const BARIS_MAKS = 5, JUM_PETAK = BARIS_MAKS * 7;
+const petak = new Array(JUM_PETAK).fill(null);
+for(let d=1; d<=D.hari_dalam_bulan; d++){
+  petak[(D.mula_hari + d - 1) % JUM_PETAK] = d;
+}
+
+// Bulan pendek (cth Februari bermula Isnin) boleh muat dalam 4 baris —
+// buang baris hujung yang kosong sepenuhnya supaya baris lain jadi lebih tinggi.
+let jumBaris = BARIS_MAKS;
+while(jumBaris > 1 && petak.slice((jumBaris-1)*7, jumBaris*7).every(v => v === null)){
+  jumBaris--;
+}
+
+const TINGGI_GRID = 1260;   // 1290 tolak 30px ruang supaya bayang jadual kelihatan
+document.documentElement.style.setProperty("--row-h", (TINGGI_GRID / jumBaris) + "px");
+
+let html="";
+for(let w=0; w<jumBaris; w++){
   html+="<tr>";
   for(let wd=0; wd<7; wd++){
-    if(!started && wd===D.mula_hari) started=true;
-    if(started && day<=D.hari_dalam_bulan){ html+=cell(day); day++; }
-    else html+=cell(null);
+    const d = petak[w*7 + wd];
+    html += (wd===6) ? cellAhad(d) : cell(d);
   }
   html+="</tr>";
 }
 document.getElementById("grid").innerHTML=html;
 document.getElementById("muslimah").innerHTML = (D.muslimah||[]).map(m=>
-  `<div class="it"><b>${m.tarikh}</b>${m.jam}<br>${m.nama}</div>`).join("");
+  `<div class="it">${avatarForUstazah(m.nama)}<div><b>${m.tarikh}</b>${m.jam}<br><span class="ustazah-nama">${m.nama}</span></div></div>`).join("");
 </script>
 </body>
 </html>

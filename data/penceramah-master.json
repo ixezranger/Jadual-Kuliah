@@ -1,0 +1,384 @@
+{
+  "_nota": "Registry penceramah untuk JADUAL KULIAH INDIVIDU. Kunci = nama kanonikal (SAMA dengan kunci dalam data/ustaz-master.json) supaya jadual bulanan dan poster individu berkongsi satu perbendaharaan nama. Dikompil daripada poster sedia ada dalam output/2026/Jadual Kuliah Individu/07-Julai-2026.",
+  "_skema": {
+    "gelaran": "Awalan kehormat pada poster. Default 'YBhg Al-Fadhil'. Kosongkan ('') kalau tak mahu.",
+    "nama_poster": "Nama seperti tercetak dalam kotak hijau, TANPA gelaran.",
+    "nama_fail": "Nama yang digunakan dalam nama fail output. Kalau kosong, guna nama_poster.",
+    "tile": "Fail gambar berbingkai dalam assets/ustaz/kuliah-individu-ustaz/. null = belum disediakan.",
+    "tajuk": "Tajuk/kitab lalai. Boleh ditindih per-tarikh dalam fail jadual individu bulanan.",
+    "nama_baris": "Dua baris nama seperti mahu dicetak dalam kotak hijau (termasuk gelaran). Ini SUMBER RUJUKAN — disalin daripada poster sedia ada. Kalau null, sistem akan pecah baris automatik (imbang lebar)."
+  },
+  "penceramah": {
+    "USTAZ AMIN QUSYAIRI": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Amin Qushairi bin Che Mat",
+      "nama_fail": "Ustaz Amin Qushairi",
+      "tile": "ki-Ustaz-Amin-Qusyairi.png",
+      "tajuk": "Kitab Tafsir Nurul Ehsan",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz Amin",
+        "Qushairi bin Che Mat"
+      ]
+    },
+    "USTAZ ADAM AZHARI": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Adam Azhari",
+      "nama_fail": "Ustaz Adam Azhari",
+      "tile": "ki-Ustaz-Adam-Azhari.png",
+      "tajuk": "Kitab Asas-asas Iktiqad (Aqidah)",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Adam Azhari"
+      ]
+    },
+    "USTAZ FIRDAUS HJ MAHADI": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Hj. Firdaus Mahadi",
+      "nama_fail": "Ustaz Hj. Firdaus Mahadi",
+      "tile": "ki-Ustaz-Hj-Firdaus-Mahadi.png",
+      "tajuk": "Kitab Irshad Al-Qari",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Hj. Firdaus Mahadi"
+      ]
+    },
+    "USTAZ SAIFUL ISLAM": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Saiful Islam Bin Ariffin",
+      "nama_fail": "Ustaz Saiful Islam",
+      "tile": "ki-Ustaz-Saiful-Islam-bin-Ariffin.png",
+      "tajuk": "Umum",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Saiful Islam Bin Ariffin"
+      ]
+    },
+    "USTAZ ANAS MALEK": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Anas bin Malik",
+      "nama_fail": "Ustaz Anas bin Malik",
+      "tile": "ki-Ustaz-Anas-bin-Malik.png",
+      "tajuk": "Kitab Hadis-hadis Pilihan",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Anas bin Malik"
+      ]
+    },
+    "USTAZ SYUHUD RAZALI": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Syuhud Razali",
+      "nama_fail": "Ustaz Syuhud Razali",
+      "tile": "ki-Ustaz Syuhud Razali.png",
+      "tajuk": "Kitab Nasihat Agama Wasiat Iman",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Syuhud Razali"
+      ]
+    },
+    "USTAZ ROZAIMAN ISMAIL": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Rozaiman Ismail",
+      "nama_fail": "Ustaz Rozaiman Ismail",
+      "tile": "ki-Ustaz-Rozaiman-Ismail.png",
+      "tajuk": "Kitab Matla' Al-Badrain",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Rozaiman Ismail"
+      ]
+    },
+    "USTAZ IZMIR FAREEZ": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Izmir Fareez",
+      "nama_fail": "Ustaz Izmir Fareez",
+      "tile": "ki-Ustaz-Izmir-Fareez.png",
+      "tajuk": "Kitab Ensiklopedia Sahabat",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Izmir Fareez"
+      ]
+    },
+    "USTAZ RAHIMI MD SAAD": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Rahimi MD Saat",
+      "nama_fail": "Ustaz Rahimi MD Saat",
+      "tile": "ki-Ustaz-Rahimi-Saad.png",
+      "tajuk": "Fiqh Sirah",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Rahimi MD Saat"
+      ]
+    },
+    "USTAZ AHMAD HISYAM": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Ahmad Hisyam Sabrani",
+      "nama_fail": "Ustaz Ahmad Hisyam Sabrani",
+      "tile": "ki-Ustaz-Ahmad-Hisyam.png",
+      "tajuk": "Tadabbur Surah Pilihan",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Ahmad Hisyam Sabrani"
+      ]
+    },
+    "USTAZ SAAD HARMAN SHAH RANIRI": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Saad Harman Shah Raniri",
+      "nama_fail": "Ustaz Saad Harman Shah Raniri",
+      "tile": "ki-Ustaz-Saad-Harman-Shah-Raniri.png",
+      "tajuk": "Kitab Bulugh Al-Maram",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Saad Harman Shah Raniri"
+      ]
+    },
+    "USTAZ HISYAM ZAKARIA": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Hj. Hisyam Zakaria",
+      "nama_fail": "Ustaz Hj Hisyam Zakaria",
+      "tile": "ki-Ustaz-Hj-Hisyam-Zakaria.png",
+      "tajuk": "Kitab Bahrul Mazi",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Hj. Hisyam Zakaria"
+      ]
+    },
+    "USTAZ LUTFI ISMAIL": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Lutfi Aminuddin",
+      "nama_fail": "Ustaz Lutfi Aminuddin",
+      "tile": "ki-Ustaz-Lutfi-Aminuddin.png",
+      "tajuk": "Kitab Sakaratul Maut",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Lutfi Aminuddin"
+      ]
+    },
+    "USTAZ DR. ZUHAILI": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Dr. Zuhaili",
+      "nama_fail": "Ustaz Dr. Zuhaili",
+      "tile": "ki-Ustaz-Dr-Zuhaili.png",
+      "tajuk": "Kitab Aqidatun Najin",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Dr. Zuhaili"
+      ]
+    },
+    "USTAZ WAN MARZUKI MAD JUNOH": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Wan Marzuki",
+      "nama_fail": "Ustaz Wan Marzuki",
+      "tile": "ki-Ustaz-Marzuki.png",
+      "tajuk": "Melihat Syurga Dari Dekat",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Wan Marzuki"
+      ]
+    },
+    "USTAZ ABD JALIL HANAFEE": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Jalil Hanafee",
+      "nama_fail": "Ustaz Jalil Hanafee",
+      "tile": "ki-Ustaz-Abd-Jalil-Hanafee.png",
+      "tajuk": "Melihat Syurga Dari Dekat",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Jalil Hanafee"
+      ]
+    },
+    "USTAZ NAJMUL KHAIRY": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Najmul Khairi",
+      "nama_fail": "Ustaz Najmul Khairi",
+      "tile": "ki-Ustaz-Najmul-Khairy.png",
+      "tajuk": "Kitab Sulamul Tauhid",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Najmul Khairi"
+      ]
+    },
+    "USTAZ HASSAN FADHLI ALHAFIZ": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Hassan Fadhli Al-Hafiz",
+      "nama_fail": "Ustaz Hassan Fadhli Al-Hafiz",
+      "tile": "ki-Ustaz-Hassan-Fadhli-Al-Hafiz.png",
+      "tajuk": "Umum",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Hassan Fadhli Al-Hafiz"
+      ]
+    },
+    "USTAZ ABDULLAH IBRAHIM": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Abdullah Ibrahim",
+      "nama_fail": "Ustaz Abdullah Ibrahim",
+      "tile": "ki-Ustaz-Abdullah-Ibrahim.png",
+      "tajuk": "Kitab Bidayatul Hidayah",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Abdullah Ibrahim"
+      ]
+    },
+    "USTAZ HAKIMIN HAFIZ": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Hakimin Hafiz",
+      "nama_fail": "Ustaz Hakimin Hafiz",
+      "tile": "ki-Ustaz-Hakimin-Hafiz.png",
+      "tajuk": "Kitab Nuran Mubina",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Hakimin Hafiz"
+      ]
+    },
+    "USTAZ LT KOL HJ MOHD NAIM HJ AHMAD": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Lt. Kol. Hj. Mohd Na'im bin Hj. Ahmad",
+      "nama_fail": "Ustaz Lt. Kol. Hj. Mohd Na'im bin Hj. Ahmad",
+      "tile": "ki-Ustaz-Lt-Kol-Hj-Mohd-Naim-Hj-Ahmad.png",
+      "tajuk": "Kitab Muhimmah",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz Lt. Kol.",
+        "Hj. Mohd Na'im bin Hj. Ahmad"
+      ]
+    },
+    "USTAZ DR. HJ. ZAINAL ABIDIN KASMIN": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Dr. Hj. Zainal Abidin bin Kusmin",
+      "nama_fail": "Ustaz Dr. Hj. Zainal Abidin bin Kusmin",
+      "tile": "ki-Ustaz Dr-Zainal-Abidin.png",
+      "tajuk": "Perubatan Islam",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz Dr.",
+        "Hj. Zainal Abidin bin Kusmin"
+      ]
+    },
+    "USTAZ MEEFTAH ANUAR": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Meeftah Anuar",
+      "nama_fail": "Ustaz Meeftah Anuar",
+      "tile": "ki-Ustaz-Meeftah-Anuar.png",
+      "tajuk": "Kitab Tanbihul Ghafilin",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Meeftah Anuar"
+      ]
+    },
+    "USTAZ MALIK HAFIFI": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Malik Afifi",
+      "nama_fail": "Ustaz Malik Afifi",
+      "tile": "ki-Ustaz-Malik-Hafifi.png",
+      "tajuk": "Hadith 40 Imam An-Nawawi",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Malik Afifi"
+      ]
+    },
+    "USTAZ NOR AHMAD HASBULLAH": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Nor Ahmad Hasbullah",
+      "nama_fail": "Ustaz Nor Ahmad Hasbullah",
+      "tile": "ki-Ustaz-Nor-Ahmad-Hasbullah.png",
+      "tajuk": "Nota Ajal Seorang Mukmin",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Nor Ahmad Hasbullah"
+      ]
+    },
+    "IMAM HADI": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Imam Hadi",
+      "nama_fail": "Ustaz Imam Hadi",
+      "tile": "ki-Ustaz-Imam-Hadi.png",
+      "tajuk": "Tajwid Al-Quran",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Imam Hadi"
+      ]
+    },
+    "IMAM AHMAD RAFAEE": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Imam Ahmad Rafaee",
+      "nama_fail": "Ustaz Imam Ahmad Rafaee",
+      "tile": "ki-Ustaz-Imam-Hadi.png",
+      "tajuk": "Tajwid Al-Quran",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Imam Ahmad Rafaee"
+      ]
+    },
+    "USTAZ EHSAN MOHD DAUD": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Mohd Ihsan Mohamad Daud",
+      "nama_fail": "Ustaz Mohd Ihsan Mohamad Daud",
+      "tile": "ki-Ustaz-Mohd-Ihsan-Mohamad-Daud.png",
+      "tajuk": "Pengurusan Harta Pustaka",
+      "nama_baris": [
+        "YBhg Al-Fadhil Ustaz",
+        "Mohd Ihsan Mohamad Daud"
+      ]
+    },
+    "USTAZ DR. AZHAR MOHD": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Dr. Azhar Mohamad",
+      "nama_fail": "Ustaz Dr. Azhar Mohamad",
+      "tile": "ki-Ustaz-Dr-Azhar-Mohamad.png",
+      "tajuk": "Kitab Syamail Muhammadiyah",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Dr. Azhar Mohamad"
+      ]
+    },
+    "USTAZ YASSIR SALLEH": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Mohd Yasir bin Salleh",
+      "nama_fail": "Ustaz Mohd Yasir bin Salleh",
+      "tile": "ki-Ustaz-Mohd-Yasir-bin-Salleh.png",
+      "tajuk": "Kitab Bughatul Tullab",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Mohd Yasir bin Salleh"
+      ]
+    },
+    "USTAZ AZAHARI MUSA": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Azhari Musa",
+      "nama_fail": "Ustaz Azhari Musa",
+      "tile": "ki-Ustaz-Azhari-Musa.png",
+      "tajuk": "Hadis-hadis Pilihan",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Azhari Musa"
+      ]
+    },
+    "USTAZ YASSIR ABD MANAN": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Yasir Abd Manan",
+      "nama_fail": "Ustaz Yasir Abd Manan",
+      "tile": "ki-Ustaz-Yasir-Abd-Manan.png",
+      "tajuk": "Tafsir Ibnu Katsir",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Yasir Abd Manan"
+      ]
+    },
+    "USTAZ JUNAIDI": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Junaidi",
+      "nama_fail": "Ustaz Junaidi",
+      "tile": "ki-Ustaz-Junaidi.png",
+      "tajuk": "Umum",
+      "nama_baris": [
+        "YBhg Al-Fadhil",
+        "Ustaz Junaidi"
+      ]
+    },
+    "USTAZ ZULKIFLI BIN MOHD NOR": {
+      "gelaran": "YBhg Al-Fadhil",
+      "nama_poster": "Ustaz Zulkifli bin Mohd Nor",
+      "nama_fail": "Ustaz Zulkifli bin Mohd Nor",
+      "tile": "ki-Ustaz-Zulkifli-bin-Mohd-Nor.png",
+      "tajuk": "Umum",
+      "nama_baris": null
+    }
+  }
+}

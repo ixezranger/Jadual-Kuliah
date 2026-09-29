@@ -1,0 +1,8 @@
+{
+  "_nota": "Sama fungsi macam ustaz-master.json tapi untuk Kuliah Muslimah. Kunci = nama betul (ikut ejaan dalam data bulanan). Nilai = fail dalam assets/ustazah/.",
+
+  "USTAZAH ADIBAH": "Muslimat-Ustazah-Adibah.png",
+  "USTAZAH NORHAFIZAH": "Muslimat-Ustazah-Noorhafizah.png",
+  "USTAZAH ZAWIYAH": "Muslimat-Ustazah-Zawiyah.png",
+  "USTAZAH FADILAH": "Muslimat-Ustazah-Fadilah.png"
+}

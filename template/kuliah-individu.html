@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<title>Kuliah Individu — Masjid As-Salam</title>
+<!--
+  Template poster KULIAH INDIVIDU (Subuh / Maghrib) — 3000 x 1689 px.
+
+  Semua nilai kedudukan dikira dalam ruang 3000x1689 dan ditakrif sebagai
+  CSS custom property di :root supaya senang ditala tanpa sentuh markup.
+  Diukur daripada poster rujukan 07-Julai-2026.
+
+  Data disuntik oleh scripts/render_individu.py sebagai window.KI (JSON).
+-->
+<style>
+  :root{
+    /* ---- kanvas ---- */
+    --W: 3000;
+    --H: 1689;
+
+    /* ---- gambar penceramah (tile berbingkai) ---- */
+    --tile-x: 263px;
+    --tile-y: 44px;
+    --tile-w: 938px;
+
+    /* ---- sprite label (Dipimpin oleh + kotak nama + pil tarikh + pil lokasi) ---- */
+    --sprite-x: 1249px;
+    --sprite-y: 806px;
+    --sprite-w: 1368px;
+
+    /* ---- warna ---- */
+    --ink:        #084250;   /* teks gelap atas latar terang  */
+    --ink-hadis:  #044255;
+    --paper:      #ffffff;   /* teks putih atas kotak hijau   */
+    --gold:       #b99248;
+
+    /* ---- 1. Dipimpin oleh (SemiBold Italic) ---- */
+    --dp-cx:   1908px;
+    --dp-top:   833px;
+    --dp-size: 37.7px;
+
+    /* ---- 2. Nama penceramah (SemiBold, putih) ---- */
+    --nm-cx:   1936px;
+    --nm-top:   928px;
+    --nm-size:   67px;
+    --nm-lh:     65px;
+    --nm-max:  1080px;       /* lebar selamat dalam kotak hijau */
+
+    /* ---- 3. Tarikh Masihi (SemiBold) ----
+       Kedua-dua baris tarikh DIPUSATKAN pada ruang antara ikon kalendar
+       (tamat x=1486) dan ikon bulan (mula x=1972) -> paksi 1729. */
+    --tm-cx:   1729px;
+    --tm-top:  1166px;
+    --tm-size: 41.3px;
+
+    /* ---- 4. Tarikh Hijri (Regular) ---- */
+    --th-cx:   1729px;
+    --th-top:  1223px;
+    --th-size:   36px;
+
+    /* ---- 5. Tajuk / kitab (SemiBold) ---- */
+    --tj-left: 2106px;
+    --tj-top:  1167px;
+    --tj-size:   42px;
+    --tj-lh:     44px;
+    --tj-max:   470px;       /* lebar kotak (had keras dalam pil putih) */
+    --tj-muat:  450px;       /* muat satu baris kalau <= nilai ini */
+
+    /* ---- ikon bulatan dalam pil tarikh ---- */
+    --ic-kal-x: 1371px;
+    --ic-bln-x: 1972px;
+    --ic-y:     1153px;
+    --ic-d:      115px;
+
+    /* ---- 6. Lokasi (SemiBold Italic, putih) ----
+       NOTA: poster rujukan 07-Julai guna gaya TEGAK. Spesifikasi bertulis
+       minta SemiBold Italic, jadi itu yang digunakan di sini. Untuk kembali
+       kepada gaya rujukan, tukar 'italic' -> 'normal' pada #lokasi. */
+    --lo-left: 1466px;
+    --lo-top:  1352px;
+    --lo-size: 41.2px;
+
+    /* ---- 8. Hadis (Medium Italic) + riwayat (Light) ---- */
+    --hd-cx:   1888px;
+    --hd-top:  1486px;
+    --hd-size: 33.2px;
+    --hd-lh:     43px;
+    --hd-max:  1180px;
+
+    --rw-cx:   1868px;
+    --rw-top:  1607px;
+    --rw-size: 28.6px;
+    --rw-rule:  120px;       /* panjang garisan emas setiap sisi */
+    --rw-gap:    26px;
+  }
+
+  @font-face{font-family:'Poppins';src:url('__FONT_REGULAR__') format('truetype');font-weight:400;font-style:normal;}
+  @font-face{font-family:'Poppins';src:url('__FONT_LIGHT__') format('truetype');font-weight:300;font-style:normal;}
+  @font-face{font-family:'Poppins';src:url('__FONT_MEDIUM__') format('truetype');font-weight:500;font-style:normal;}
+  @font-face{font-family:'Poppins';src:url('__FONT_MEDIUM_ITALIC__') format('truetype');font-weight:500;font-style:italic;}
+  @font-face{font-family:'Poppins';src:url('__FONT_SEMIBOLD__') format('truetype');font-weight:600;font-style:normal;}
+  @font-face{font-family:'Poppins';src:url('__FONT_SEMIBOLD_ITALIC__') format('truetype');font-weight:600;font-style:italic;}
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:3000px;height:1689px;overflow:hidden;background:#fff;}
+  body{font-family:'Poppins',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision;}
+
+  #stage{position:relative;width:3000px;height:1689px;overflow:hidden;}
+  #stage > *{position:absolute;}
+
+  #bg{left:0;top:0;width:3000px;height:1689px;}
+  #tile{left:var(--tile-x);top:var(--tile-y);width:var(--tile-w);}
+  #sprite{left:var(--sprite-x);top:var(--sprite-y);width:var(--sprite-w);}
+  /* Hiasan penjuru kiri-bawah. Ditegakkan pada tepi bawah, dan kerana ia
+     datang selepas #tile dalam DOM ia dilukis DI HADAPAN gambar penceramah. */
+  #deco{left:var(--deco-x,0px);top:auto;bottom:var(--deco-b,0px);}
+
+  /* ---------- teks ---------- */
+  .t{white-space:pre;}                       /* elak pembalut tak dijangka */
+  .center{text-align:center;transform:translateX(-50%);}
+
+  #dipimpin{
+    left:var(--dp-cx);top:var(--dp-top);width:1200px;
+    font:italic 600 var(--dp-size)/var(--dp-size) 'Poppins';
+    color:var(--ink);
+  }
+  #nama{
+    left:var(--nm-cx);top:var(--nm-top);width:var(--nm-max);
+    font:600 var(--nm-size)/var(--nm-lh) 'Poppins';
+    color:var(--paper);white-space:pre-line;
+  }
+  #tarikh-masihi{
+    left:var(--tm-cx);top:var(--tm-top);width:600px;
+    font:600 var(--tm-size)/var(--tm-size) 'Poppins';
+    color:var(--ink);
+  }
+  #tarikh-hijri{
+    left:var(--th-cx);top:var(--th-top);width:600px;
+    font:400 var(--th-size)/var(--th-size) 'Poppins';
+    color:var(--ink);
+  }
+  #tajuk{
+    left:var(--tj-left);top:var(--tj-top);width:var(--tj-max);
+    font:600 var(--tj-size)/var(--tj-lh) 'Poppins';
+    color:var(--ink);white-space:pre-line;
+  }
+  #lokasi{
+    left:var(--lo-left);top:var(--lo-top);
+    font:italic 600 var(--lo-size)/var(--lo-size) 'Poppins';
+    color:var(--paper);
+  }
+  #hadis{
+    left:var(--hd-cx);top:var(--hd-top);width:var(--hd-max);
+    font:italic 500 var(--hd-size)/var(--hd-lh) 'Poppins';
+    color:var(--ink-hadis);white-space:pre-line;
+  }
+  #ic-kalendar{left:var(--ic-kal-x);top:var(--ic-y);width:var(--ic-d);}
+  #ic-bulan   {left:var(--ic-bln-x);top:var(--ic-y);width:var(--ic-d);}
+
+  /* tanda petik hadis */
+  .quote{
+    font:600 92px/1 'Poppins';color:var(--ink-hadis);opacity:.85;
+  }
+  #quote-open {left:1312px;top:1452px;}
+  #quote-close{left:2430px;top:1500px;}
+
+  /* baris atribusi: ornamen — garis — teks — garis — ornamen */
+  #riwayat{
+    left:var(--rw-cx);top:var(--rw-top);transform:translateX(-50%);
+    display:flex;align-items:center;gap:var(--rw-gap);
+    font:300 var(--rw-size)/1.25 'Poppins';color:var(--ink);white-space:pre;
+  }
+  #riwayat .rule{
+    width:var(--rw-rule);height:2px;
+    background:linear-gradient(90deg,rgba(185,146,72,0) 0%,var(--gold) 60%,var(--gold) 100%);
+  }
+  #riwayat .rule.r{transform:scaleX(-1);}
+  #riwayat svg{display:block;}
+</style>
+</head>
+<body>
+<div id="stage">
+  <img id="bg"     src="__BG__"     alt="">
+  <img id="tile"   src="__TILE__"   alt="">
+  <img id="deco"   src="__DECO__"   alt="">
+  <img id="sprite" src="__SPRITE__" alt="">
+
+  <img id="ic-kalendar" src="__IC_KALENDAR__" alt="">
+  <img id="ic-bulan"    src="__IC_BULAN__"    alt="">
+
+  <div class="t center" id="dipimpin">Dipimpin oleh</div>
+  <div class="t center" id="nama"></div>
+
+  <div class="t center" id="tarikh-masihi"></div>
+  <div class="t center" id="tarikh-hijri"></div>
+  <div class="t" id="tajuk"></div>
+  <div class="t" id="lokasi"></div>
+
+  <div class="quote" id="quote-open">&ldquo;</div>
+  <div class="t center" id="hadis"></div>
+  <div class="quote" id="quote-close">&rdquo;</div>
+
+  <div id="riwayat">
+    <svg width="60" height="18" viewBox="0 0 60 18" fill="none" aria-hidden="true">
+      <path d="M2 9 L9 4 L16 9 L9 14 Z"  stroke="#b99248" stroke-width="1.6" fill="none"/>
+      <path d="M20 9 L27 4 L34 9 L27 14 Z" stroke="#b99248" stroke-width="1.6" fill="#b99248" fill-opacity=".35"/>
+      <path d="M38 9 L45 4 L52 9 L45 14 Z" stroke="#b99248" stroke-width="1.6" fill="none"/>
+      <path d="M54 9 L58 9" stroke="#b99248" stroke-width="1.6"/>
+    </svg>
+    <span class="rule"></span>
+    <span id="riwayat-teks"></span>
+    <span class="rule r"></span>
+    <svg width="60" height="18" viewBox="0 0 60 18" fill="none" aria-hidden="true" style="transform:scaleX(-1)">
+      <path d="M2 9 L9 4 L16 9 L9 14 Z"  stroke="#b99248" stroke-width="1.6" fill="none"/>
+      <path d="M20 9 L27 4 L34 9 L27 14 Z" stroke="#b99248" stroke-width="1.6" fill="#b99248" fill-opacity=".35"/>
+      <path d="M38 9 L45 4 L52 9 L45 14 Z" stroke="#b99248" stroke-width="1.6" fill="none"/>
+      <path d="M54 9 L58 9" stroke="#b99248" stroke-width="1.6"/>
+    </svg>
+  </div>
+</div>
+
+<script>
+/* Data disuntik oleh renderer sebagai window.KI. */
+(function () {
+  var d = window.KI || {};
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* Hiasan penjuru: buang terus kalau masjid ini tiada hiasan dikonfigurasi,
+     supaya tiada ikon imej rosak pada poster. */
+  var elDeco = $('deco');
+  if (!elDeco.getAttribute('src')) {
+    elDeco.remove();
+  } else {
+    document.documentElement.style.setProperty('--deco-x', (d.deco_x || 0) + 'px');
+    document.documentElement.style.setProperty('--deco-b', (d.deco_bawah || 0) + 'px');
+  }
+
+  /* Pecah teks kepada dua baris yang seimbang lebar. Hanya pecah pada
+     ruang — jadi 'Al-Maram' tak akan terputus pada sempang.
+     'hadMuat' (pilihan): kalau teks penuh muat dalam lebar ini, kekal
+     satu baris. */
+  function pecahImbang(teks, el, hadMuat) {
+    var kata = String(teks || '').split(/\s+/).filter(Boolean);
+    var probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;font:' +
+                          getComputedStyle(el).font;
+    document.body.appendChild(probe);
+    var lebar = function (s) { probe.textContent = s; return probe.offsetWidth; };
+
+    var hasil;
+    if (kata.length < 2 || (hadMuat && lebar(kata.join(' ')) <= hadMuat)) {
+      hasil = [kata.join(' ')];
+    } else {
+      var terbaik = 1, skor = Infinity;
+      for (var k = 1; k < kata.length; k++) {
+        var s = Math.max(lebar(kata.slice(0, k).join(' ')),
+                         lebar(kata.slice(k).join(' ')));
+        if (s < skor) { skor = s; terbaik = k; }
+      }
+      hasil = [kata.slice(0, terbaik).join(' '), kata.slice(terbaik).join(' ')];
+    }
+    document.body.removeChild(probe);
+    return hasil;
+  }
+
+  var elNama = $('nama');
+  var baris = (d.nama_baris && d.nama_baris.length)
+                ? d.nama_baris
+                : pecahImbang(d.nama || '', elNama);
+  elNama.textContent = baris.join('\n');
+
+  $('tarikh-masihi').textContent = d.tarikh_masihi || '';
+  $('tarikh-hijri').textContent  = d.tarikh_hijri || '';
+  var elTajuk = $('tajuk');
+  var hadTajuk = parseFloat(getComputedStyle(document.documentElement)
+                   .getPropertyValue('--tj-muat'));
+  elTajuk.textContent = pecahImbang(d.tajuk || '', elTajuk, hadTajuk).join('\n');
+  $('lokasi').textContent        = d.lokasi || '';
+  $('hadis').textContent         = d.hadis || '';
+  $('riwayat-teks').textContent  = d.hadis_riwayat || '';
+  if (d.dipimpin) $('dipimpin').textContent = d.dipimpin;
+
+  /* Nama panjang: kecilkan saiz sehingga muat dalam kotak hijau (maks 2 baris). */
+  var nama = elNama;
+  var maxW = parseFloat(getComputedStyle(document.documentElement)
+               .getPropertyValue('--nm-max'));
+  var size = parseFloat(getComputedStyle(document.documentElement)
+               .getPropertyValue('--nm-size'));
+  var lh   = parseFloat(getComputedStyle(document.documentElement)
+               .getPropertyValue('--nm-lh'));
+  var ratio = lh / size;
+  while (size > 34 && (nama.scrollWidth > maxW || nama.offsetHeight > 2.15 * lh)) {
+    size -= 1;
+    lh = Math.round(size * ratio);
+    nama.style.font = '600 ' + size + 'px/' + lh + 'px Poppins';
+  }
+  /* Kekalkan blok nama berpusat menegak pada kotak hijau. */
+  var nmTop = parseFloat(getComputedStyle(document.documentElement)
+                .getPropertyValue('--nm-top'));
+  var baseH = 2 * parseFloat(getComputedStyle(document.documentElement)
+                .getPropertyValue('--nm-lh'));
+  nama.style.top = (nmTop + (baseH - nama.offsetHeight) / 2) + 'px';
+
+  /* Tajuk panjang: kecilkan sehingga muat 2 baris dalam pil putih. */
+  var tj = $('tajuk');
+  var tjSize = parseFloat(getComputedStyle(document.documentElement)
+                 .getPropertyValue('--tj-size'));
+  var tjLh   = parseFloat(getComputedStyle(document.documentElement)
+                 .getPropertyValue('--tj-lh'));
+  var tjRatio = tjLh / tjSize;
+  while (tjSize > 26 && tj.offsetHeight > 2.15 * tjLh) {
+    tjSize -= 1;
+    tj.style.font = '600 ' + tjSize + 'px/' + Math.round(tjSize * tjRatio) + 'px Poppins';
+  }
+
+  /* Pusatkan tajuk pada paksi yang sama seperti tajuk dua baris, supaya kitab
+     satu baris tidak tergantung di bahagian atas pil. Sama seperti kaedah yang
+     digunakan untuk nama penceramah di atas. */
+  var tjTop = parseFloat(getComputedStyle(document.documentElement)
+                .getPropertyValue('--tj-top'));
+  tj.style.top = (tjTop + (2 * tjLh - tj.offsetHeight) / 2) + 'px';
+
+  /* Tanda selesai untuk Playwright. */
+  document.documentElement.setAttribute('data-ki-ready', '1');
+})();
+</script>
+</body>
+</html>

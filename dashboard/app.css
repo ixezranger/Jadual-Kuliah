@@ -1,0 +1,234 @@
+/* Papan Kawalan Jadual Kuliah — tema selari dengan poster (teal + emas). */
+:root{
+  --bg:#f4f7f7;
+  --panel:#ffffff;
+  --rail:#083b46;
+  --rail-2:#0a4b58;
+  --ink:#0d2b33;
+  --ink-2:#5b767e;
+  --line:#dde7e8;
+  --teal:#0d6b78;
+  --teal-2:#0a8a94;
+  --gold:#b99248;
+  --ok:#0f7a52;
+  --ok-bg:#e4f5ec;
+  --warn:#9a5b06;
+  --warn-bg:#fdf1dc;
+  --stop:#a32f2f;
+  --stop-bg:#fbeaea;
+  --idle-bg:#eef2f3;
+  --r:12px;
+  --shadow:0 1px 2px rgba(13,43,51,.06), 0 8px 24px rgba(13,43,51,.06);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font:15px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif;
+  color:var(--ink);background:var(--bg);
+  display:grid;grid-template-columns:264px 1fr;min-height:100vh;
+}
+
+/* ------------------------------- rail ------------------------------- */
+.rail{
+  background:linear-gradient(180deg,var(--rail),var(--rail-2));
+  color:#dff0f2;display:flex;flex-direction:column;gap:28px;
+  padding:22px 16px;position:sticky;top:0;height:100vh;
+}
+.brand{display:flex;gap:12px;align-items:center}
+.brand-mark{
+  width:42px;height:42px;border-radius:11px;flex:0 0 auto;
+  display:grid;place-items:center;font-weight:700;letter-spacing:.5px;
+  background:linear-gradient(140deg,var(--gold),#8d6a2c);color:#12333a;
+}
+.brand strong{display:block;font-size:15px}
+.brand small{color:#8fbcc3;font-size:12px}
+
+nav{display:flex;flex-direction:column;gap:4px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;width:100%;
+  background:none;border:0;color:#bcdde1;cursor:pointer;
+  padding:10px 12px;border-radius:9px;font:inherit;text-align:left;
+}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav-item.is-active{background:rgba(255,255,255,.14);color:#fff;font-weight:600}
+.nav-item .ico{width:18px;text-align:center;opacity:.85}
+.badge{
+  margin-left:auto;background:var(--gold);color:#12333a;font-style:normal;
+  font-size:11px;font-weight:700;padding:1px 7px;border-radius:20px;
+}
+.rail-foot{margin-top:auto;border-top:1px solid rgba(255,255,255,.13);padding-top:14px}
+.rail-masjid{font-size:13px;color:#fff;font-weight:600;margin-top:4px}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:#7fb0b8}
+
+/* ------------------------------- main ------------------------------- */
+main{padding:26px 30px 60px;max-width:1240px}
+.topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:22px}
+h1{font-size:23px;font-weight:650}
+.sub{color:var(--ink-2);font-size:13.5px;margin-top:2px}
+.topbar-act{display:flex;align-items:center;gap:8px}
+.topbar-act .lbl{color:var(--ink-2)}
+
+select,input[type=text],input[type=search],input:not([type]){
+  font:inherit;padding:8px 11px;border:1px solid var(--line);
+  border-radius:9px;background:#fff;color:var(--ink);min-width:150px;
+}
+select:focus,input:focus{outline:2px solid var(--teal-2);outline-offset:1px}
+
+.btn{
+  font:inherit;font-weight:600;border:0;border-radius:9px;cursor:pointer;
+  padding:9px 16px;background:var(--teal);color:#fff;white-space:nowrap;
+}
+.btn:hover{background:var(--teal-2)}
+.btn:disabled{background:#c3d2d4;color:#7d8f93;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--teal);border:1px solid var(--line)}
+.btn-ghost:hover{background:#eef7f8;border-color:var(--teal-2)}
+.btn-sm{padding:5px 11px;font-size:13px}
+
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:20px 22px;box-shadow:var(--shadow);margin-bottom:18px;
+}
+.card h2{font-size:15.5px;font-weight:650;margin-bottom:4px}
+.card h2.warn{color:var(--warn)}
+.hint{color:var(--ink-2);font-size:13px}
+.hint code{background:#eef2f3;padding:1px 5px;border-radius:4px;font-size:12px}
+.row-between{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.row-gap{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* ---------------------------- pilih masjid ---------------------------- */
+.radio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:14px}
+.radio-card{
+  display:flex;gap:11px;align-items:flex-start;padding:13px 15px;cursor:pointer;
+  border:1.5px solid var(--line);border-radius:10px;background:#fff;
+}
+.radio-card:hover{border-color:var(--teal-2)}
+.radio-card input{margin-top:3px;accent-color:var(--teal)}
+.radio-card.is-on{border-color:var(--teal);background:#f2fafb}
+.radio-card strong{display:block;font-size:14px}
+.radio-card small{color:var(--ink-2);font-size:12px}
+
+/* ------------------------------ pipeline ------------------------------ */
+.pipeline{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.step{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px 18px 16px;box-shadow:var(--shadow);display:flex;
+  flex-direction:column;gap:11px;position:relative;
+}
+.step::before{
+  content:attr(data-no);position:absolute;top:-9px;left:18px;
+  background:var(--rail);color:#fff;font-size:11px;font-weight:700;
+  width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+}
+.step h3{font-size:14.5px;font-weight:650;margin-top:4px}
+.step p{font-size:13px;color:var(--ink-2)}
+.step .act{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap;padding-top:4px}
+.step.is-next{border-color:var(--teal);box-shadow:0 0 0 3px #d9eff1,var(--shadow)}
+
+.chip{
+  display:inline-flex;align-items:center;gap:6px;align-self:flex-start;
+  font-size:12px;font-weight:650;padding:3px 10px;border-radius:20px;
+  background:var(--idle-bg);color:var(--ink-2);
+}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.stop{background:var(--stop-bg);color:var(--stop)}
+.chip.run{background:#e6f0fb;color:#1b5ea8}
+
+.progress{height:7px;border-radius:20px;background:var(--idle-bg);overflow:hidden;margin:14px 0}
+.progress>div{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-2));width:0;transition:width .3s}
+
+.dropzone{
+  border:1.5px dashed var(--line);border-radius:10px;padding:16px;text-align:center;
+  font-size:13px;color:var(--ink-2);cursor:pointer;background:#fbfdfd;
+}
+.dropzone:hover,.dropzone.is-over{border-color:var(--teal-2);background:#f0f9fa;color:var(--teal)}
+.file-list{list-style:none;font-size:12.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:3px}
+.file-list li::before{content:"▸ ";color:var(--teal-2)}
+
+/* ------------------------------- jadual ------------------------------- */
+.tbl{width:100%;border-collapse:collapse;margin-top:14px;font-size:13.5px}
+.tbl th{
+  text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+  color:var(--ink-2);padding:8px 10px;border-bottom:1.5px solid var(--line);font-weight:650;
+}
+.tbl td{padding:9px 10px;border-bottom:1px solid #eef3f3;vertical-align:middle}
+.tbl tr:hover td{background:#fafcfc}
+.tbl .num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.muted{color:var(--ink-2)}
+
+.log-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+pre#log-teks{
+  background:#08222a;color:#c8e6e9;border-radius:9px;padding:14px 16px;
+  font:12.5px/1.6 "Cascadia Mono",Consolas,monospace;max-height:320px;
+  overflow:auto;white-space:pre-wrap;
+}
+
+.grid-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.grid-form label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.grid-form input{font-weight:400;color:var(--ink)}
+.span2{grid-column:1/-1}
+
+.toast{
+  position:fixed;right:22px;bottom:22px;background:var(--rail);color:#fff;
+  padding:12px 18px;border-radius:10px;font-size:13.5px;box-shadow:var(--shadow);
+  z-index:50;max-width:380px;
+}
+.toast.bad{background:var(--stop)}
+
+@media (max-width:980px){
+  body{grid-template-columns:1fr}
+  .rail{position:static;height:auto;flex-direction:row;align-items:center;flex-wrap:wrap}
+  .rail-foot{margin:0;border:0;padding:0}
+  nav{flex-direction:row;flex-wrap:wrap}
+  .pipeline{grid-template-columns:1fr}
+}
+
+/* ---- gambar kecil dalam lajur "Gambar berbingkai" ---- */
+.tile-sel{display:flex;align-items:center;gap:10px;min-width:0}
+.tile-mini{
+  width:40px;height:54px;flex:none;border-radius:6px;object-fit:cover;
+  object-position:center 26%;background:var(--idle-bg);border:1px solid var(--line);
+}
+.tile-nama{min-width:0;overflow-wrap:anywhere}
+
+/* ---- pemilih gambar ---- */
+.lapis{
+  position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:24px;
+  background:rgba(8,43,51,.52);
+}
+.lapis[hidden]{display:none}
+.pilih{
+  background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);
+  width:min(920px,100%);max-height:min(760px,90vh);display:flex;flex-direction:column;
+}
+.pilih-head{padding:18px 22px 14px;border-bottom:1px solid var(--line)}
+.pilih-head h3{font-size:17px;margin-bottom:2px}
+.pilih-cari{margin-top:12px;width:100%}
+.pilih-body{padding:18px 22px;overflow:auto;flex:1}
+.pilih-grid{
+  display:grid;gap:12px;
+  grid-template-columns:repeat(auto-fill,minmax(132px,1fr));
+}
+.tile-kad{
+  border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  padding:8px;cursor:pointer;text-align:left;font:inherit;color:inherit;
+  display:flex;flex-direction:column;gap:7px;
+}
+.tile-kad:hover{border-color:var(--teal-2);box-shadow:var(--shadow)}
+.tile-kad:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tile-kad img{
+  width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center 24%;
+  border-radius:6px;background:var(--idle-bg);
+}
+.tile-kad b{font-size:11.5px;font-weight:600;line-height:1.35;overflow-wrap:anywhere}
+.tile-kad small{font-size:11px;color:var(--ink-2);line-height:1.3}
+.tile-kad.terpilih{border-color:var(--teal);box-shadow:0 0 0 2px var(--teal-2) inset}
+.tile-kad.dipakai small{color:var(--warn)}
+.pilih-foot{
+  padding:14px 22px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:12px;align-items:center;
+}
+
+/* butang kanan kekal di kanan walaupun "Kosongkan slot" disembunyikan */
+.pilih-foot .row-gap{margin-left:auto;display:flex;gap:8px}
+.pilih-body .grid-form{margin:0}

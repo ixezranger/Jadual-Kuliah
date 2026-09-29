@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Papan Kawalan — Jadual Kuliah</title>
+<link rel="stylesheet" href="/dashboard/app.css">
+</head>
+<body>
+
+<aside class="rail">
+  <div class="brand">
+    <div class="brand-mark">JK</div>
+    <div>
+      <strong>Jadual Kuliah</strong>
+      <small>Sistem Penjanaan Poster</small>
+    </div>
+  </div>
+
+  <nav>
+    <button class="nav-item is-active" data-view="aliran">
+      <span class="ico">◧</span> Aliran Kerja
+    </button>
+    <button class="nav-item" data-view="individu">
+      <span class="ico">▤</span> Kuliah Individu
+    </button>
+    <button class="nav-item" data-view="penceramah">
+      <span class="ico">☺</span> Penceramah
+      <em class="badge" id="badge-penceramah" hidden></em>
+    </button>
+    <button class="nav-item" data-view="tetapan">
+      <span class="ico">⚙</span> Masjid &amp; Surau
+    </button>
+    <a class="nav-item" href="/dashboard/manual.html">
+      <span class="ico">✎</span> Penjanaan Manual
+    </a>
+  </nav>
+
+  <div class="rail-foot">
+    <label class="lbl">Lokasi aktif</label>
+    <div id="rail-masjid" class="rail-masjid">—</div>
+  </div>
+</aside>
+
+<main>
+  <header class="topbar">
+    <div>
+      <h1 id="tajuk-view">Aliran Kerja</h1>
+      <p class="sub" id="sub-view">Ikut langkah dari kiri ke kanan.</p>
+    </div>
+    <div class="topbar-act">
+      <label class="lbl" for="pilih-bulan">Bulan kerja</label>
+      <select id="pilih-bulan"></select>
+      <button class="btn btn-ghost" id="btn-segar" title="Muat semula status">⟳</button>
+    </div>
+  </header>
+
+  <!-- ============================ ALIRAN KERJA ============================ -->
+  <section class="view" id="view-aliran">
+
+    <div class="card card-pilih">
+      <h2>1 · Pilih Masjid / Surau</h2>
+      <p class="hint">Senarai ini diurus dalam <em>Masjid &amp; Surau</em>.
+         Data disimpan sebagai fail rata — tiada pangkalan data.</p>
+      <div id="pilih-masjid" class="radio-grid"></div>
+    </div>
+
+    <div class="pipeline" id="pipeline"></div>
+
+    <div class="card" id="kad-tindakan" hidden>
+      <h2 class="warn">Perlu tindakan anda</h2>
+      <div id="senarai-tindakan"></div>
+    </div>
+
+    <div class="card" id="kad-log" hidden>
+      <div class="log-head">
+        <h2>Log penjanaan</h2>
+        <span class="chip" id="log-status">—</span>
+      </div>
+      <pre id="log-teks"></pre>
+    </div>
+  </section>
+
+  <!-- ============================ KULIAH INDIVIDU ============================ -->
+  <section class="view" id="view-individu" hidden>
+    <div class="card">
+      <div class="row-between">
+        <div>
+          <h2 id="individu-tajuk">—</h2>
+          <p class="hint" id="individu-folder"></p>
+        </div>
+        <div class="row-gap">
+          <button class="btn btn-ghost" id="btn-tambah-slot">Tambah slot</button>
+          <button class="btn btn-ghost" id="btn-buka-individu">Buka folder</button>
+          <button class="btn" id="btn-jana-individu">Jana yang belum ada</button>
+        </div>
+      </div>
+      <div class="progress"><div id="individu-bar"></div></div>
+      <table class="tbl" id="tbl-individu">
+        <thead><tr>
+          <th>Tarikh</th><th>Slot</th><th>Penceramah</th>
+          <th>Tajuk</th><th>Gambar</th><th>Poster</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================ PENCERAMAH ============================ -->
+  <section class="view" id="view-penceramah" hidden>
+    <div class="card">
+      <div class="row-between">
+        <div>
+          <h2>Registry penceramah</h2>
+          <p class="hint">Nama, gelaran, pecahan baris dan kitab untuk poster individu.</p>
+        </div>
+        <div class="row-gap">
+          <input type="search" id="cari-penceramah" placeholder="Cari nama…">
+          <button class="btn btn-ghost" id="btn-buka-tile">Buka folder gambar</button>
+        </div>
+      </div>
+      <table class="tbl" id="tbl-penceramah">
+        <thead><tr>
+          <th>Nama kanonikal</th><th>Nama pada poster</th>
+          <th>Tajuk lalai</th><th>Gambar berbingkai</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================ TETAPAN ============================ -->
+  <section class="view" id="view-tetapan" hidden>
+    <div class="card">
+      <h2>Masjid &amp; Surau berdaftar</h2>
+      <p class="hint">Setiap lokasi ada kod unik, latar poster dan folder output sendiri.</p>
+      <table class="tbl" id="tbl-masjid">
+        <thead><tr>
+          <th>Kod</th><th>Nama</th><th>Teks lokasi pada poster</th>
+          <th>Folder output</th><th>Status</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Daftar lokasi baharu</h2>
+      <form id="borang-masjid" class="grid-form">
+        <label>Kod
+          <input name="kod" required placeholder="M0002 / S0001" pattern="[A-Za-z]\d{4}">
+        </label>
+        <label>Nama penuh
+          <input name="nama" required placeholder="Surau Al-Hidayah, Kota Damansara">
+        </label>
+        <label class="span2">Teks lokasi pada poster
+          <input name="nama_poster" required
+                 placeholder="Surau Al-Hidayah, Kota Damansara, Petaling Jaya">
+        </label>
+        <p class="hint span2">
+          Selepas daftar, letak dua fail latar dalam
+          <code>assets/base-design/kuliah-individu/</code> dengan nama
+          <code>Background-Design-Kuliah-Subuh-01-&lt;KOD&gt;.png</code> dan
+          <code>…-Maghrib-01-&lt;KOD&gt;.png</code> (3000 × 1689 px).
+        </p>
+        <div class="span2"><button class="btn" type="submit">Daftar lokasi</button></div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<div id="lapis-gambar" class="lapis" hidden>
+  <div class="pilih" role="dialog" aria-modal="true" aria-labelledby="pilih-tajuk">
+    <div class="pilih-head">
+      <h3 id="pilih-tajuk">Pilih gambar</h3>
+      <p class="sub" id="pilih-sub">—</p>
+      <input id="pilih-cari" class="pilih-cari" type="search"
+             placeholder="Tapis nama fail..." autocomplete="off">
+    </div>
+    <div class="pilih-body"><div id="pilih-grid" class="pilih-grid"></div></div>
+    <div class="pilih-foot">
+      <button class="btn btn-ghost btn-sm" id="pilih-kosong">Kosongkan gambar</button>
+      <button class="btn btn-ghost btn-sm" id="pilih-batal">Batal</button>
+    </div>
+  </div>
+</div>
+
+<div id="lapis-slot" class="lapis" hidden>
+  <div class="pilih" role="dialog" aria-modal="true" aria-labelledby="slot-tajuk">
+    <div class="pilih-head">
+      <h3 id="slot-tajuk">Ubah slot kuliah</h3>
+      <p class="sub" id="slot-sub">—</p>
+    </div>
+    <div class="pilih-body">
+      <form id="borang-slot" class="grid-form">
+        <label class="lbl">Tarikh
+          <input id="slot-hari" type="number" min="1" max="31" required>
+        </label>
+        <label class="lbl">Slot
+          <select id="slot-slot">
+            <option value="maghrib">Maghrib</option>
+            <option value="subuh">Subuh</option>
+          </select>
+        </label>
+        <label class="lbl span2">Penceramah
+          <select id="slot-kanon"></select>
+        </label>
+        <label class="lbl span2">Tajuk / kitab
+          <input id="slot-tajuk-teks" type="text" placeholder="Ikut tajuk lalai penceramah">
+          <span class="hint" id="slot-tajuk-hint"></span>
+        </label>
+      </form>
+    </div>
+    <div class="pilih-foot">
+      <button class="btn btn-ghost btn-sm" id="slot-buang">Kosongkan slot</button>
+      <span class="row-gap">
+        <button class="btn btn-ghost btn-sm" id="slot-batal">Batal</button>
+        <button class="btn btn-sm" id="slot-simpan">Simpan</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="/dashboard/app.js"></script>
+</body>
+</html>
